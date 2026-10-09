@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-sand-50 text-forest-900;
+  }
+
+  ::selection {
+    @apply bg-gold-300 text-forest-950;
+  }
+
+  :focus-visible {
+    @apply outline-none;
+  }
+}
