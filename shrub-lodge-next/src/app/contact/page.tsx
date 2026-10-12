@@ -23,82 +23,82 @@ export default function ContactPage() {
         image={IMAGES.aboutHero}
       />
 
-      <section className="bg-sand-50 py-20 sm:py-24">
-        <Container className="grid gap-10 lg:grid-cols-[1fr_1.2fr]">
-          <div className="flex flex-col gap-5">
-            <Reveal>
+      <section className="bg-sand-50 py-16 sm:py-20 lg:py-24">
+        <Container className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:gap-10">
+          <div className="flex min-w-0 flex-col gap-5">
+            <Reveal className="min-w-0">
               <a
                 href={`tel:${siteConfig.phone.reservations}`}
-                className="flex items-start gap-4 rounded-3xl border border-sand-200 bg-white p-6 shadow-sm transition-colors hover:border-gold-300"
+                className="flex min-w-0 items-start gap-4 rounded-3xl border border-sand-200 bg-white p-5 shadow-sm transition-colors hover:border-gold-300 sm:p-6"
               >
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-forest-900 text-gold-300">
                   <Phone className="h-5 w-5" strokeWidth={1.6} />
                 </span>
-                <span className="flex flex-col gap-1">
+                <span className="flex min-w-0 flex-col gap-1">
                   <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-600">
                     Phone
                   </span>
-                  <span className="font-medium text-forest-900">
+                  <span className="break-words font-medium text-forest-900">
                     {siteConfig.phoneDisplay.reservations}
                   </span>
                 </span>
               </a>
             </Reveal>
 
-            <Reveal delay={80}>
+            <Reveal delay={80} className="min-w-0">
               <a
                 href={`mailto:${siteConfig.email.reservations}`}
-                className="flex items-start gap-4 rounded-3xl border border-sand-200 bg-white p-6 shadow-sm transition-colors hover:border-gold-300"
+                className="flex min-w-0 items-start gap-4 rounded-3xl border border-sand-200 bg-white p-5 shadow-sm transition-colors hover:border-gold-300 sm:p-6"
               >
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-forest-900 text-gold-300">
                   <Mail className="h-5 w-5" strokeWidth={1.6} />
                 </span>
-                <span className="flex flex-col gap-1">
+                <span className="flex min-w-0 flex-col gap-1">
                   <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-600">
                     Email
                   </span>
-                  <span className="font-medium text-forest-900">
+                  <span className="break-words font-medium text-forest-900">
                     {siteConfig.email.reservations}
                   </span>
                 </span>
               </a>
             </Reveal>
 
-            <Reveal delay={160}>
-              <div className="flex items-start gap-4 rounded-3xl border border-sand-200 bg-white p-6 shadow-sm">
+            <Reveal delay={160} className="min-w-0">
+              <div className="flex min-w-0 items-start gap-4 rounded-3xl border border-sand-200 bg-white p-5 shadow-sm sm:p-6">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-forest-900 text-gold-300">
                   <MapPin className="h-5 w-5" strokeWidth={1.6} />
                 </span>
-                <span className="flex flex-col gap-1">
+                <span className="flex min-w-0 flex-col gap-1">
                   <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-600">
                     Address
                   </span>
-                  <span className="font-medium text-forest-900">
+                  <span className="break-words font-medium text-forest-900">
                     {siteConfig.address.full}
                   </span>
                 </span>
               </div>
             </Reveal>
 
-            <Reveal delay={240}>
-              <div className="flex items-start gap-4 rounded-3xl border border-sand-200 bg-white p-6 shadow-sm">
+            <Reveal delay={240} className="min-w-0">
+              <div className="flex min-w-0 items-start gap-4 rounded-3xl border border-sand-200 bg-white p-5 shadow-sm sm:p-6">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-forest-900 text-gold-300">
                   <Clock className="h-5 w-5" strokeWidth={1.6} />
                 </span>
-                <div className="flex flex-col gap-1 text-forest-900">
+                <div className="flex min-w-0 flex-col gap-1 text-forest-900">
                   <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-600">
                     Opening Hours
                   </span>
-                  <span>Front Desk: {siteConfig.hours.frontDesk}</span>
-                  <span>Check-in: {siteConfig.hours.checkIn}</span>
-                  <span>Check-out: {siteConfig.hours.checkOut}</span>
+                  <span className="break-words">Front Desk: {siteConfig.hours.frontDesk}</span>
+                  <span className="break-words">Check-in: {siteConfig.hours.checkIn}</span>
+                  <span className="break-words">Check-out: {siteConfig.hours.checkOut}</span>
                 </div>
               </div>
             </Reveal>
           </div>
 
-          <Reveal delay={120}>
-            <div className="rounded-3xl border border-sand-200 bg-white p-8 shadow-sm sm:p-10">
+          <Reveal delay={120} className="min-w-0">
+            <div className="rounded-3xl border border-sand-200 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
               <h2 className="font-display text-2xl text-forest-900">
                 Send us a message
               </h2>

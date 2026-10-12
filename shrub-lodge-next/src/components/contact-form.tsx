@@ -57,7 +57,7 @@ export function ContactForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
       <div className="grid gap-5 sm:grid-cols-2">
-        <div className="flex flex-col gap-2">
+        <div className="flex min-w-0 flex-col gap-2">
           <label htmlFor="firstName" className="text-sm font-medium text-forest-900">
             First Name
           </label>
@@ -71,7 +71,7 @@ export function ContactForm() {
             <span className="text-xs text-red-600">{errors.firstName.message}</span>
           ) : null}
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex min-w-0 flex-col gap-2">
           <label htmlFor="lastName" className="text-sm font-medium text-forest-900">
             Last Name
           </label>
