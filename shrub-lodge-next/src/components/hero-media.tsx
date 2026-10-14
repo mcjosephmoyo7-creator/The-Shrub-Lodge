@@ -42,7 +42,7 @@ export function HeroMedia({
           src={wix(image, 16 / 9)}
           alt=""
           fill
-          priority={priority && index === 0}
+          priority={priority && index < 3}
           sizes="100vw"
           className={cn(
             "object-cover transition-opacity duration-700 ease-out",
