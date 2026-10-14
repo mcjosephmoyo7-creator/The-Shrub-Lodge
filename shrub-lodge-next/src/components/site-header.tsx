@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Menu, X } from "lucide-react";
@@ -20,24 +20,63 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [mobileActivitiesOpen, setMobileActivitiesOpen] = useState(false);
+  const openRef = useRef(false);
 
   useEffect(() => {
     setOpen(false);
     setMobileActivitiesOpen(false);
   }, [pathname]);
 
+  // Keep the header visible while the mobile menu is open.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    onScroll();
+    openRef.current = open;
+    if (open) setHidden(false);
+  }, [open]);
+
+  // Hide the header when scrolling down, reveal it as soon as the user scrolls
+  // back up (or returns near the top of the page).
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let frame = 0;
+
+    const apply = () => {
+      frame = 0;
+      const y = window.scrollY;
+      const delta = y - lastY;
+
+      setScrolled(y > 12);
+
+      if (openRef.current) {
+        setHidden(false);
+      } else if (y > 96 && delta > 4) {
+        setHidden(true);
+      } else if (delta < -4 || y <= 96) {
+        setHidden(false);
+      }
+
+      lastY = y;
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(apply);
+    };
+
+    apply();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, []);
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b backdrop-blur-md transition-all duration-300",
+        "sticky top-0 z-50 border-b backdrop-blur-md transition-[transform,background-color,border-color,box-shadow] duration-300 ease-out motion-reduce:transition-none",
+        hidden && !open ? "-translate-y-full" : "translate-y-0",
         scrolled
           ? "border-sand-300/70 bg-white/85 shadow-md shadow-forest-950/5"
           : "border-transparent bg-forest-950/80",
