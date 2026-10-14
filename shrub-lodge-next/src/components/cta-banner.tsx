@@ -1,13 +1,14 @@
 import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
+import { siteConfig } from "@/lib/site";
 
 export function CtaBanner({
   eyebrow = "Plan your stay",
   title = "Ready to experience Victoria Falls with The Shrub Lodge?",
   intro = "Tell us what you would love to do and our team will help craft the perfect Zimbabwe adventure.",
   primaryLabel = "Book Now",
-  primaryHref = "/contact",
+  primaryHref = siteConfig.bookingHref,
   secondaryLabel = "Browse Activities",
   secondaryHref = "/activities",
 }: {

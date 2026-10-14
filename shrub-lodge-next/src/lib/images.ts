@@ -36,9 +36,9 @@ export const IMAGES = {
   pool: "83df1a_7dc421ea56a24ea88ab35f6f9e4f5b18~mv2.jpeg",
 
   // Rooms
-  roomSingle: "48e288_e84b769de6ab4a20839305f74c0e082d~mv2.jpg",
-  roomDouble: "83df1a_f63a6a90c24a438ab26713a5c26df852~mv2.jpeg",
-  roomTwin: "63da5c_aea60354152b4eab915434203ca407ca~mv2.png",
+  roomSingle: "83df1a_7dc421ea56a24ea88ab35f6f9e4f5b18~mv2.jpeg",
+  roomDouble: "83df1a_ee3d64168c1f4087aadd5d92a807bf58~mv2.jpeg",
+  roomTwin: "83df1a_ac28749fce0f4e98a6a2c7d770e01e07~mv2.jpeg",
   roomDetail1: "83df1a_ee3d64168c1f4087aadd5d92a807bf58~mv2.jpeg",
   roomDetail2: "83df1a_ac28749fce0f4e98a6a2c7d770e01e07~mv2.jpeg",
 
@@ -47,6 +47,13 @@ export const IMAGES = {
   restaurantDish: "63da5c_65a3a9352088420d9e87173f43f54704~mv2.jpg", // Plated signature dish
   restaurantTable: "48e288_6b0ae0c990e64765b810dc3983736e00~mv2.jpg", // Elegant dining tables
   restaurantPoolside: "63da5c_aea60354152b4eab915434203ca407ca~mv2.png", // Poolside restaurant terrace
+  comfortAdventure1: "63da5c_1896e2ad419042148aebedc8a97e556e~mv2.jpeg",
+  comfortAdventure2: "63da5c_5cb80aaabc5e4d749490cc605ac267b2~mv2.jpeg",
+  comfortAdventure3: "63da5c_f36536809a1b401fbb320820eb507ac1~mv2.jpeg",
+  comfortAdventure4: "63da5c_f869a78a1b894c52947b0377d8d0ecf4~mv2.jpeg",
+  comfortAdventure5: "63da5c_bbb86c6915354dfc8fa61d9f5028e7c4~mv2.jpeg",
+  comfortAdventure6: "63da5c_dc3024e403f3402ea83addb5c4fcca2f~mv2.jpeg",
+  comfortAdventure7: "63da5c_95fb1e98b5684e72894e2468ad5892f4~mv2.jpeg",
 
   // Food & Beverage Collections
   foodGourmet: "/images/restaurant/gourmet-plating.jpg",

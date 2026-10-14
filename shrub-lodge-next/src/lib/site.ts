@@ -42,7 +42,19 @@ export const siteConfig = {
     checkIn: "From 2:00 pm",
     checkOut: "By 10:00 am",
   },
-  bookingHref: "/contact",
+  bookingHref: "https://book.nightsbridge.com/34381?startdate=2024-03-27&enddate=2024-03-29",
+  socialLinks: [
+    {
+      title: "WhatsApp",
+      href: "https://api.whatsapp.com/send/?phone=263781739213&text&type=phone_number&app_absent=0",
+    },
+    { title: "Instagram", href: "https://www.instagram.com/theshrublodge" },
+    {
+      title: "Facebook",
+      href: "https://www.facebook.com/people/The-Shrub-Lodge/100089051739448/",
+    },
+    { title: "TikTok", href: "https://www.tiktok.com/@theshrublodge" },
+  ],
 } as const;
 
 export const navigation: NavItem[] = [

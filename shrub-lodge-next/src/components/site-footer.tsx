@@ -16,6 +16,23 @@ export function SiteFooter() {
           <p className="max-w-xs text-sm leading-relaxed text-sand-100/70">
             {siteConfig.description}
           </p>
+          <div className="flex flex-col gap-3">
+            <h3 className="font-display text-lg text-sand-50">Follow us</h3>
+            <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-sand-100/75">
+              {siteConfig.socialLinks.map((social) => (
+                <li key={social.title}>
+                  <a
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="transition-colors hover:text-gold-300"
+                  >
+                    {social.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         <div className="flex flex-col gap-4">

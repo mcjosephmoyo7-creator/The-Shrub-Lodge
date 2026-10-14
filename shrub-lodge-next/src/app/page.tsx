@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { Hero } from "@/components/hero";
 import { FeatureCard } from "@/components/feature-card";
 import { RoomCard } from "@/components/room-card";
+import { PhotoGallery } from "@/components/photo-gallery";
 import { AmenitiesGrid } from "@/components/amenities-grid";
 import { TestimonialSection } from "@/components/testimonial";
 import { CtaBanner } from "@/components/cta-banner";
@@ -22,13 +22,47 @@ const showcase = [
     title: "Rooms",
     description: "Thoughtfully styled rooms to rest and recharge.",
     href: "/about",
-    image: IMAGES.roomDetail1,
   },
   {
     title: "Adventure",
     description: "Curated experiences across Victoria Falls and beyond.",
     href: "/activities",
-    image: IMAGES.adrenaline,
+  },
+];
+
+const comfortAdventurePhotos = [
+  IMAGES.heroFallsTall,
+  IMAGES.heroFalls,
+  IMAGES.heroFallsPortrait,
+  IMAGES.comfortAdventure1,
+  IMAGES.comfortAdventure2,
+  IMAGES.comfortAdventure3,
+  IMAGES.comfortAdventure4,
+  IMAGES.comfortAdventure5,
+  IMAGES.comfortAdventure6,
+  IMAGES.comfortAdventure7,
+];
+
+const lodgeMoments = [
+  {
+    title: "A warm welcome",
+    image: IMAGES.lodgeExterior,
+    alt: "The Shrub Lodge exterior surrounded by greenery",
+  },
+  {
+    title: "Room to unwind",
+    image: IMAGES.roomDetail1,
+    alt: "A thoughtfully prepared room at The Shrub Lodge",
+  },
+  {
+    title: "Garden moments",
+    image: IMAGES.lodgeGarden,
+    alt: "Lush garden at The Shrub Lodge",
+  },
+  {
+    title: "The wonder of the Falls",
+    image: IMAGES.vicFalls,
+    alt: "Victoria Falls, one of the adventures near The Shrub Lodge",
   },
 ];
 
@@ -39,7 +73,7 @@ export default function HomePage() {
         size="full"
         eyebrow="Victoria Falls · Zimbabwe"
         title="More Than a Stay — Your Zimbabwe Story Begins Here"
-        subtitle="Your gateway to unforgettable adventure in the heart of Zimbabwe."
+        subtitle="Your gateway to an unforgettable adventure in the heart of Zimbabwe."
         image={IMAGES.heroFalls}
       >
         <ButtonLink href={siteConfig.bookingHref}>Book Now</ButtonLink>
@@ -88,8 +122,8 @@ export default function HomePage() {
           <Reveal className="order-1 lg:order-2">
             <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] shadow-xl">
               <Image
-                src={wix(IMAGES.lodgeExterior, 4 / 5)}
-                alt="The Shrub Lodge"
+                src={wix(IMAGES.restaurantPoolside, 4 / 5)}
+                alt="Swimming pool beside The Shrub Lodge restaurant"
                 fill
                 sizes="(min-width: 1024px) 45vw, 100vw"
                 className="object-cover"
@@ -145,6 +179,41 @@ export default function HomePage() {
         </Container>
       </section>
 
+      {/* Photo moments */}
+      <section className="bg-sand-50 py-20 sm:py-24">
+        <Container className="flex flex-col gap-12">
+          <Reveal>
+            <SectionHeading
+              eyebrow="A little look around"
+              title="Find your moment at The Shrub"
+              intro="From a warm welcome and peaceful garden to the wonders just beyond the lodge, take a closer look at your Victoria Falls escape."
+            />
+          </Reveal>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {lodgeMoments.map((moment, index) => (
+              <Reveal key={moment.title} delay={index * 75}>
+                <figure className="group relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-forest-900 shadow-md">
+                  <Image
+                    src={wix(moment.image, 4 / 5)}
+                    alt={moment.alt}
+                    fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-gradient-to-t from-forest-950/80 via-transparent to-transparent"
+                  />
+                  <figcaption className="absolute inset-x-0 bottom-0 p-6 font-display text-2xl text-sand-50">
+                    {moment.title}
+                  </figcaption>
+                </figure>
+              </Reveal>
+            ))}
+          </div>
+        </Container>
+      </section>
+
       {/* Showcase */}
       <section className="bg-sand-50 py-20 sm:py-24">
         <Container className="flex flex-col gap-14">
@@ -154,33 +223,20 @@ export default function HomePage() {
               title="Comfort Inside, Adventure Outside"
             />
           </Reveal>
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="flex flex-wrap gap-3">
             {showcase.map((item, index) => (
               <Reveal key={item.title} delay={index * 90}>
                 <Link
                   href={item.href}
-                  className="group relative flex min-h-[380px] flex-col justify-end overflow-hidden rounded-[2rem] p-8 text-sand-50"
+                  aria-label={`${item.title}: ${item.description}`}
+                  className="inline-flex items-center rounded-lg bg-gold-300 px-5 py-2.5 text-sm font-medium text-forest-950 transition-colors hover:bg-gold-400"
                 >
-                  <Image
-                    src={wix(item.image, 4 / 3)}
-                    alt=""
-                    fill
-                    sizes="(min-width: 1024px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-forest-950/90 via-forest-950/40 to-transparent" />
-                  <div className="relative z-10 flex flex-col gap-2">
-                    <h3 className="font-display text-3xl">{item.title}</h3>
-                    <p className="text-sm text-sand-100/80">{item.description}</p>
-                    <span className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-gold-300">
-                      Discover
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </span>
-                  </div>
+                  {item.title}
                 </Link>
               </Reveal>
             ))}
           </div>
+          <PhotoGallery photos={comfortAdventurePhotos} />
         </Container>
       </section>
 
