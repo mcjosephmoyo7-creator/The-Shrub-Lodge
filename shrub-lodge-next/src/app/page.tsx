@@ -78,7 +78,7 @@ export default function HomePage() {
         subtitle="Your gateway to an unforgettable adventure in the heart of Zimbabwe."
         image={IMAGES.heroFalls}
         images={heroImages}
-        interval={1000}
+        interval={5000}
       >
         <ButtonLink href={siteConfig.bookingHref}>Book Now</ButtonLink>
         <ButtonLink

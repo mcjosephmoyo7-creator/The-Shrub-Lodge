@@ -6,13 +6,13 @@ import { wix } from "@/lib/images";
 import { cn } from "@/lib/utils";
 
 /**
- * Cross-fading background slideshow for the page hero. Images swap on a short
- * interval (default 1s) so the hero cycles through the lodge's signature shots,
- * matching the rotating hero on theshrublodge.com.
+ * Cross-fading background slideshow for the page hero. Images swap slowly
+ * (default 5s) so the hero eases through the lodge's signature shots, matching
+ * the rotating hero on theshrublodge.com.
  */
 export function HeroMedia({
   images,
-  interval = 1000,
+  interval = 5000,
   priority = true,
 }: {
   images: string[];
@@ -45,7 +45,7 @@ export function HeroMedia({
           priority={priority && index < 3}
           sizes="100vw"
           className={cn(
-            "object-cover transition-opacity duration-700 ease-out",
+            "object-cover transition-opacity duration-1000 ease-out",
             index === active ? "opacity-100" : "opacity-0",
           )}
         />
