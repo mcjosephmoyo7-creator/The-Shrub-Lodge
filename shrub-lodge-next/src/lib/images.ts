@@ -35,6 +35,43 @@ export function wixFit(mediaPath: string, size = 720, quality = 80): string {
   return `${CDN}${mediaPath}/v1/fit/w_${size},h_${size},q_${quality},enc_webp,quality_auto/${mediaPath}`;
 }
 
+/**
+ * Build a Wix CDN URL cropped ("filled") to an exact width and aspect ratio.
+ * Unlike `wix()` (which relies on the next/image loader), this returns a ready
+ * to use URL, so it can be dropped straight into a native `<img>`/`<picture>`
+ * for art-directed, breakpoint-specific renditions.
+ * @param mediaPath Wix media path or local/absolute path
+ * @param width Target width in pixels
+ * @param aspectRatio width / height of the rendition
+ */
+export function wixFill(
+  mediaPath: string,
+  width: number,
+  aspectRatio = 0.75,
+  quality = 82,
+): string {
+  if (!mediaPath) return "";
+  if (mediaPath.startsWith("/") || mediaPath.startsWith("http://") || mediaPath.startsWith("https://")) {
+    return mediaPath;
+  }
+  const height = Math.max(1, Math.round(width / aspectRatio));
+  return `${CDN}${mediaPath}/v1/fill/w_${width},h_${height},al_c,q_${quality},usm_0.66_1.00_0.01,enc_webp,quality_auto/photo.webp`;
+}
+
+/**
+ * Build a responsive `srcSet` of Wix "fill" renditions at a fixed aspect ratio.
+ */
+export function wixSrcSet(
+  mediaPath: string,
+  aspectRatio: number,
+  widths: number[],
+  quality = 82,
+): string {
+  return widths
+    .map((width) => `${wixFill(mediaPath, width, aspectRatio, quality)} ${width}w`)
+    .join(", ");
+}
+
 export const IMAGES = {
   // Brand Logo
   logo: "48e288_8835d09b08ae4c9ea2a2ebf2e8bb6963~mv2.png",

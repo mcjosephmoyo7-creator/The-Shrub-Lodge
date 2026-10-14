@@ -1,23 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import { wix } from "@/lib/images";
+import { HeroPicture } from "@/components/hero-picture";
 import { cn } from "@/lib/utils";
 
 /**
  * Cross-fading background slideshow for the page hero. Images swap slowly
  * (default 5s) so the hero eases through the lodge's signature shots, matching
- * the rotating hero on theshrublodge.com.
+ * the rotating hero on theshrublodge.com. Each slide is art-directed so it
+ * fills the hero shape nicely on phones, tablets and desktop alike.
  */
 export function HeroMedia({
   images,
   interval = 5000,
   priority = true,
+  variant = "full",
 }: {
   images: string[];
   interval?: number;
   priority?: boolean;
+  variant?: "full" | "page";
 }) {
   const [active, setActive] = useState(0);
 
@@ -37,18 +39,20 @@ export function HeroMedia({
   return (
     <>
       {images.map((image, index) => (
-        <Image
+        <div
           key={`${image}-${index}`}
-          src={wix(image, 16 / 9)}
-          alt=""
-          fill
-          priority={priority && index < 3}
-          sizes="100vw"
+          aria-hidden={index !== active}
           className={cn(
-            "object-cover transition-opacity duration-1000 ease-out",
+            "absolute inset-0 transition-opacity duration-1000 ease-out",
             index === active ? "opacity-100" : "opacity-0",
           )}
-        />
+        >
+          <HeroPicture
+            image={image}
+            variant={variant}
+            priority={priority && index < 3}
+          />
+        </div>
       ))}
     </>
   );

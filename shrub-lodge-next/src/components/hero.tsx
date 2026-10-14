@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
-import Image from "next/image";
 import { Container } from "@/components/ui/container";
 import { HeroMedia } from "@/components/hero-media";
-import { wix } from "@/lib/images";
+import { HeroPicture } from "@/components/hero-picture";
 import { cn } from "@/lib/utils";
 
 export function Hero({
@@ -41,16 +40,16 @@ export function Hero({
       )}
     >
       {slides ? (
-        <HeroMedia images={slides} interval={interval} priority={priority} />
-      ) : (
-        <Image
-          src={wix(image, 16 / 9)}
-          alt=""
-          fill
+        <HeroMedia
+          images={slides}
+          interval={interval}
           priority={priority}
-          sizes="100vw"
-          className="object-cover"
+          variant={size}
         />
+      ) : (
+        <div className="absolute inset-0">
+          <HeroPicture image={image} variant={size} priority={priority} />
+        </div>
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-forest-950/95 via-forest-950/65 to-forest-950/45" />
       <Container className="relative z-10 py-24 sm:py-28">
