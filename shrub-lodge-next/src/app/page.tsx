@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { Hero } from "@/components/hero";
 import { FeatureCard } from "@/components/feature-card";
 import { RoomCard } from "@/components/room-card";
@@ -17,18 +16,6 @@ import { features, testimonials } from "@/lib/content/features";
 import { rooms } from "@/lib/content/rooms";
 import { amenities, amenitiesIntro } from "@/lib/content/amenities";
 
-const showcase = [
-  {
-    title: "Rooms",
-    description: "Thoughtfully styled rooms to rest and recharge.",
-    href: "/about",
-  },
-  {
-    title: "Adventure",
-    description: "Curated experiences across Victoria Falls and beyond.",
-    href: "/activities",
-  },
-];
 
 const comfortAdventurePhotos = [
   IMAGES.heroFallsTall,
@@ -122,8 +109,8 @@ export default function HomePage() {
           <Reveal className="order-1 lg:order-2">
             <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] shadow-xl">
               <Image
-                src={wix(IMAGES.restaurantPoolside, 4 / 5)}
-                alt="Swimming pool beside The Shrub Lodge restaurant"
+                src={wix(IMAGES.lodgeExterior, 4 / 5)}
+                alt="The Shrub Lodge"
                 fill
                 sizes="(min-width: 1024px) 45vw, 100vw"
                 className="object-cover"
@@ -214,28 +201,16 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Showcase */}
+      {/* Comfort Inside, Adventure Outside */}
       <section className="bg-sand-50 py-20 sm:py-24">
         <Container className="flex flex-col gap-14">
           <Reveal>
             <SectionHeading
-              eyebrow="Projects"
+              eyebrow="Explore"
               title="Comfort Inside, Adventure Outside"
+              intro="Your stay at The Shrub Lodge is more than just luxury accommodation, it's the gateway to unforgettable adventures. From guided tours of Victoria Falls and serene Zambezi River cruises, to thrilling safaris, cultural village visits, white-water rafting, and fishing trips, every experience is designed to showcase the very best of Zimbabwe."
             />
           </Reveal>
-          <div className="flex flex-wrap gap-3">
-            {showcase.map((item, index) => (
-              <Reveal key={item.title} delay={index * 90}>
-                <Link
-                  href={item.href}
-                  aria-label={`${item.title}: ${item.description}`}
-                  className="inline-flex items-center rounded-lg bg-gold-300 px-5 py-2.5 text-sm font-medium text-forest-950 transition-colors hover:bg-gold-400"
-                >
-                  {item.title}
-                </Link>
-              </Reveal>
-            ))}
-          </div>
           <PhotoGallery photos={comfortAdventurePhotos} />
         </Container>
       </section>

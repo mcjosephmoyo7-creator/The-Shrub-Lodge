@@ -1,13 +1,32 @@
 export type Feature = {
   number: string;
   title: string;
+  description: string;
   icon: "location" | "sparkles" | "compass";
 };
 
 export const features: Feature[] = [
-  { number: "01", title: "Prime Location", icon: "location" },
-  { number: "02", title: "Luxury Touches", icon: "sparkles" },
-  { number: "03", title: "Adventure Ready", icon: "compass" },
+  {
+    number: "01",
+    title: "Prime Location",
+    description:
+      "Nestled in the quiet suburbs of Victoria Falls — a short drive from the Falls, Zambezi National Park, and the town centre.",
+    icon: "location",
+  },
+  {
+    number: "02",
+    title: "Luxury Touches",
+    description:
+      "Modern rooms with ensuite bathrooms, air conditioning, DSTV, and a sparkling outdoor pool to relax and recharge.",
+    icon: "sparkles",
+  },
+  {
+    number: "03",
+    title: "Adventure Ready",
+    description:
+      "Our team arranges every activity — game drives, bungee jumping, river cruises, safaris, and more — right from the lodge.",
+    icon: "compass",
+  },
 ];
 
 export const testimonials = [

@@ -15,6 +15,7 @@ export function FeatureCard({ feature }: { feature: Feature }) {
         </span>
       </div>
       <h3 className="font-display text-2xl text-forest-900">{feature.title}</h3>
+      <p className="text-sm leading-relaxed text-forest-800/70">{feature.description}</p>
     </div>
   );
 }
