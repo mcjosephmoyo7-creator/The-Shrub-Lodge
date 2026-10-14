@@ -10,7 +10,9 @@ const DEFAULT_RATIO = 0.75; // 4:3
 
 export default function wixImageLoader({ src, width, quality }) {
   if (!src || !src.includes(WIX_MEDIA)) {
-    return src;
+    // Local/static assets are not resized; echo the requested width so Next.js
+    // does not warn about a non-width-aware loader.
+    return src.includes("?") ? `${src}&w=${width}` : `${src}?w=${width}`;
   }
 
   const [base, query] = src.split("?");
