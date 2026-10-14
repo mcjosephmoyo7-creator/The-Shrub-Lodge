@@ -42,6 +42,9 @@ export function TestimonialSection({
   useEffect(() => {
     if (items.length < 2) return;
 
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (mediaQuery.matches) return;
+
     const interval = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % items.length);
     }, 7000);

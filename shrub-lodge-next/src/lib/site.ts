@@ -42,7 +42,7 @@ export const siteConfig = {
     checkIn: "From 2:00 pm",
     checkOut: "By 10:00 am",
   },
-  bookingHref: "https://book.nightsbridge.com/34381?startdate=2024-03-27&enddate=2024-03-29",
+  bookingHref: "https://book.nightsbridge.com/34381",
   socialLinks: [
     {
       title: "WhatsApp",
