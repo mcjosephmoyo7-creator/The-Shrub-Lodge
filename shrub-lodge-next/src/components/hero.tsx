@@ -1,11 +1,14 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { Container } from "@/components/ui/container";
+import { HeroMedia } from "@/components/hero-media";
 import { wix } from "@/lib/images";
 import { cn } from "@/lib/utils";
 
 export function Hero({
   image,
+  images,
+  interval,
   eyebrow,
   title,
   subtitle,
@@ -16,6 +19,8 @@ export function Hero({
   className,
 }: {
   image: string;
+  images?: string[];
+  interval?: number;
   eyebrow?: string;
   title: string;
   subtitle?: string;
@@ -25,6 +30,8 @@ export function Hero({
   children?: ReactNode;
   className?: string;
 }) {
+  const slides = images && images.length > 1 ? images : null;
+
   return (
     <section
       className={cn(
@@ -33,14 +40,18 @@ export function Hero({
         className,
       )}
     >
-      <Image
-        src={wix(image, 16 / 9)}
-        alt=""
-        fill
-        priority={priority}
-        sizes="100vw"
-        className="object-cover"
-      />
+      {slides ? (
+        <HeroMedia images={slides} interval={interval} priority={priority} />
+      ) : (
+        <Image
+          src={wix(image, 16 / 9)}
+          alt=""
+          fill
+          priority={priority}
+          sizes="100vw"
+          className="object-cover"
+        />
+      )}
       <div className="absolute inset-0 bg-gradient-to-t from-forest-950/95 via-forest-950/65 to-forest-950/45" />
       <Container className="relative z-10 py-24 sm:py-28">
         <div

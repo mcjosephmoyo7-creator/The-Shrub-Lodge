@@ -17,17 +17,23 @@ import { rooms } from "@/lib/content/rooms";
 import { amenities, amenitiesIntro } from "@/lib/content/amenities";
 
 
-const comfortAdventurePhotos = [
-  IMAGES.heroFallsTall,
-  IMAGES.heroFalls,
+const heroImages = [
   IMAGES.heroFallsPortrait,
+  IMAGES.heroFalls,
+  IMAGES.heroFallsTall,
+];
+
+// The gallery mirrors the "Comfort Inside, Adventure Outside" collection on
+// theshrublodge.com — eight unique photos, no repeats.
+const comfortAdventurePhotos = [
+  IMAGES.lodgePool,
   IMAGES.comfortAdventure1,
+  IMAGES.lodgeGarden,
   IMAGES.comfortAdventure2,
+  IMAGES.lodgeInterior,
+  IMAGES.lodgeExterior,
   IMAGES.comfortAdventure3,
-  IMAGES.comfortAdventure4,
-  IMAGES.comfortAdventure5,
-  IMAGES.comfortAdventure6,
-  IMAGES.comfortAdventure7,
+  IMAGES.chobeOvernight,
 ];
 
 const lodgeMoments = [
@@ -62,6 +68,8 @@ export default function HomePage() {
         title="More Than a Stay — Your Zimbabwe Story Begins Here"
         subtitle="Your gateway to an unforgettable adventure in the heart of Zimbabwe."
         image={IMAGES.heroFalls}
+        images={heroImages}
+        interval={1000}
       >
         <ButtonLink href={siteConfig.bookingHref}>Book Now</ButtonLink>
         <ButtonLink

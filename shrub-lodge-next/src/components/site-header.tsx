@@ -7,6 +7,7 @@ import { ChevronDown, Menu, X } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import { SocialLinks } from "@/components/social-links";
 import { navigation, siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -110,6 +111,10 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <SocialLinks
+            tone={scrolled ? "onLight" : "onDark"}
+            className="mr-1 hidden xl:flex"
+          />
           <ButtonLink
             href={siteConfig.bookingHref}
             className="hidden px-5 py-2.5 sm:inline-flex"
@@ -143,6 +148,14 @@ export function SiteHeader() {
         )}
       >
         <Container className="flex flex-col gap-1 py-4">
+          <div
+            className={cn(
+              "mb-2 px-2 pb-3",
+              scrolled ? "border-b border-sand-200" : "border-b border-forest-800",
+            )}
+          >
+            <Logo tone={scrolled ? "dark" : "light"} />
+          </div>
           {navigation.map((item) =>
             item.children ? (
               <div key={item.href} className="flex flex-col">
@@ -222,6 +235,10 @@ export function SiteHeader() {
           <ButtonLink href={siteConfig.bookingHref} className="mt-2 w-full">
             Book Now
           </ButtonLink>
+          <SocialLinks
+            tone={scrolled ? "onLight" : "onDark"}
+            className="mt-4 justify-center"
+          />
         </Container>
       </div>
     </header>

@@ -18,7 +18,7 @@ const photoLayouts = [
 
 export function PhotoGallery({ photos }: { photos: string[] }) {
   const [activePage, setActivePage] = useState(0);
-  const pageCount = Math.ceil(photos.length / 6);
+  const pageCount = Math.max(1, Math.ceil(photos.length / 8));
 
   useEffect(() => {
     if (pageCount < 2) return;
@@ -46,10 +46,7 @@ export function PhotoGallery({ photos }: { photos: string[] }) {
           style={{ transform: `translateX(-${activePage * 100}%)` }}
         >
           {Array.from({ length: pageCount }, (_, pageIndex) => {
-            const pagePhotos = Array.from(
-              { length: Math.min(8, photos.length) },
-              (_, index) => photos[(pageIndex * 6 + index) % photos.length],
-            );
+            const pagePhotos = photos.slice(pageIndex * 8, pageIndex * 8 + 8);
 
             return (
               <div
