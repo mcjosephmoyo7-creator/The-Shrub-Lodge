@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Hero } from "@/components/hero";
 import { FeatureCard } from "@/components/feature-card";
 import { RoomCard } from "@/components/room-card";
-import { PhotoGallery } from "@/components/photo-gallery";
+import { AutoGallery } from "@/components/auto-gallery";
 import { AmenitiesGrid } from "@/components/amenities-grid";
 import { TestimonialSection } from "@/components/testimonial";
 import { CtaBanner } from "@/components/cta-banner";
@@ -23,17 +23,26 @@ const heroImages = [
   IMAGES.heroFallsTall,
 ];
 
-// The gallery mirrors the "Comfort Inside, Adventure Outside" collection on
-// theshrublodge.com — eight unique photos, no repeats.
+// The gallery gathers every lodge and adventure photograph from
+// theshrublodge.com's "Comfort Inside, Adventure Outside" area — comfort shots
+// (rooms, pool, garden, dining terrace) alongside adventure shots (the Falls) —
+// with no repeats.
 const comfortAdventurePhotos = [
   IMAGES.lodgePool,
-  IMAGES.comfortAdventure1,
-  IMAGES.lodgeGarden,
-  IMAGES.comfortAdventure2,
-  IMAGES.lodgeInterior,
   IMAGES.lodgeExterior,
+  IMAGES.lodgeGarden,
+  IMAGES.lodgeInterior,
+  IMAGES.comfortAdventure1,
+  IMAGES.comfortAdventure2,
   IMAGES.comfortAdventure3,
   IMAGES.chobeOvernight,
+  IMAGES.roomSingle,
+  IMAGES.roomDouble,
+  IMAGES.roomTwin,
+  IMAGES.restaurantPoolside,
+  IMAGES.heroFalls,
+  IMAGES.heroFallsTall,
+  IMAGES.heroFallsPortrait,
 ];
 
 const lodgeMoments = [
@@ -219,7 +228,7 @@ export default function HomePage() {
               intro="Your stay at The Shrub Lodge is more than just luxury accommodation, it's the gateway to unforgettable adventures. From guided tours of Victoria Falls and serene Zambezi River cruises, to thrilling safaris, cultural village visits, white-water rafting, and fishing trips, every experience is designed to showcase the very best of Zimbabwe."
             />
           </Reveal>
-          <PhotoGallery photos={comfortAdventurePhotos} />
+          <AutoGallery photos={comfortAdventurePhotos} />
         </Container>
       </section>
 

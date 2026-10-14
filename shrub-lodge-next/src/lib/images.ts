@@ -20,6 +20,21 @@ export function wix(mediaPath: string, aspectRatio?: number): string {
   return aspectRatio ? `${url}?ar=${aspectRatio}` : url;
 }
 
+/**
+ * Build a Wix CDN URL that *fits* the image inside a square box without
+ * cropping, so the whole photo is always visible. Handy for masonry-style
+ * galleries where we want full, uncropped imagery.
+ * @param mediaPath Wix media path or local/absolute path
+ * @param size Longest edge of the returned rendition in pixels
+ */
+export function wixFit(mediaPath: string, size = 720, quality = 80): string {
+  if (!mediaPath) return "";
+  if (mediaPath.startsWith("/") || mediaPath.startsWith("http://") || mediaPath.startsWith("https://")) {
+    return mediaPath;
+  }
+  return `${CDN}${mediaPath}/v1/fit/w_${size},h_${size},q_${quality},enc_webp,quality_auto/${mediaPath}`;
+}
+
 export const IMAGES = {
   // Brand Logo
   logo: "48e288_8835d09b08ae4c9ea2a2ebf2e8bb6963~mv2.png",
