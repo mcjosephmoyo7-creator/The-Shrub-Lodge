@@ -34,7 +34,7 @@ export const siteConfig = {
     reception: "+263 781 739 213",
   },
   email: {
-    reservations: "reservations@theshrublodge.com",
+    reservations: "mcjosephmoyo7@gmail.com",
     tours: "tours@theshrublodge.com",
   },
   hours: {

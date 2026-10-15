@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Coffee, GlassWater, Utensils, Wine, Clock, Users, Award, Sparkles } from "lucide-react";
+import { Utensils, Clock, Users, Award, Wine } from "lucide-react";
 import { Hero } from "@/components/hero";
 import { CtaBanner } from "@/components/cta-banner";
 import { ButtonLink } from "@/components/ui/button";
@@ -8,90 +8,17 @@ import { Container } from "@/components/ui/container";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/ui/reveal";
 import { IMAGES, wix } from "@/lib/images";
+import {
+  beverageHighlights,
+  foodHighlights,
+  restaurantIntro,
+} from "@/lib/content/restaurant";
 
 export const metadata: Metadata = {
   title: "The Shrub Restaurant | Dining & Beverages in Victoria Falls",
   description:
     "Fresh, local and seasonal dishes at The Shrub Lodge Restaurant in Victoria Falls. Enjoy gourmet meals, signature beverages, fine wines, and heartfelt hospitality.",
 };
-
-// Popular Food Offerings
-const foodHighlights = [
-  {
-    name: "Grilled Safari Sirloin",
-    category: "Main Course",
-    description: "Tender prime steak cooked over open flame, served with roasted root vegetables and signature pepper jus.",
-    image: IMAGES.foodSteak,
-    alt: "Grilled prime steak at The Shrub Restaurant",
-  },
-  {
-    name: "Chef's Catch of the Day",
-    category: "Signature Dish",
-    description: "Pan-seared Zambezi river bream infused with citrus herbs, wilted greens, and saffron baby potatoes.",
-    image: IMAGES.restaurantDish,
-    alt: "Signature plated fish dish at The Shrub Restaurant",
-  },
-  {
-    name: "Lodge Breakfast Spread",
-    category: "Morning Dining",
-    description: "A hearty continental and cooked spread with farm-fresh eggs, tropical fruits, warm pastries, and artisan preserves.",
-    image: IMAGES.foodBreakfast,
-    alt: "Artisan breakfast spread at The Shrub Lodge",
-  },
-  {
-    name: "Garden Fresh Zambezi Salad",
-    category: "Salads & Light Fare",
-    description: "Crisp local greens, avocado, roasted seeds, and sun-ripened tomatoes tossed in our house herb vinaigrette.",
-    image: IMAGES.foodSalad,
-    alt: "Fresh salad bowl with crisp greens and vinaigrette",
-  },
-  {
-    name: "Gourmet Plated Creations",
-    category: "Chef's Specials",
-    description: "Seasonally inspired culinary artistry blending Zimbabwean flavors with contemporary international cuisine.",
-    image: IMAGES.foodGourmet,
-    alt: "Fine dining gourmet culinary dish",
-  },
-  {
-    name: "Artisan Sweet Delights",
-    category: "Desserts",
-    description: "Handcrafted fruit tarts, chocolate ganache, and house-made sorbets to finish your meal in style.",
-    image: IMAGES.foodDessert,
-    alt: "Decadent dessert pastry at The Shrub Restaurant",
-  },
-];
-
-// Curated Beverages & Drinks
-const beverageHighlights = [
-  {
-    name: "Victoria Falls Signature Cocktails",
-    description: "Craft cocktails including our famed Zambezi Sunset, spiced rum coolers, and classic Gin & Tonic with fresh botanicals.",
-    image: IMAGES.drinkCocktail,
-    tag: "Signature Bar",
-    icon: GlassWater,
-  },
-  {
-    name: "Curated Southern African Wines",
-    description: "Carefully selected vintages from premier Cape vineyards, crisp Sauvignon Blancs, and bold Cabernet Sauvignons.",
-    image: IMAGES.drinkWine,
-    tag: "Wine Selection",
-    icon: Wine,
-  },
-  {
-    name: "Fresh Tropical Juices & Mocktails",
-    description: "Refreshing cold-pressed juices, wild fruit coolers, and revitalizing smoothies prepared fresh each morning.",
-    image: IMAGES.drinkJuice,
-    tag: "Fresh & Healthy",
-    icon: Sparkles,
-  },
-  {
-    name: "Barista Espresso & Herbal Teas",
-    description: "Single-origin African coffee beans roasted to perfection, rich cappuccinos, and organic herbal infusions.",
-    image: IMAGES.drinkCoffee,
-    tag: "Hot Beverages",
-    icon: Coffee,
-  },
-];
 
 // Hospitality & Restaurant Team
 const hospitalityHighlights = [
@@ -131,17 +58,17 @@ export default function RestaurantPage() {
           <Reveal>
             <SectionHeading
               align="left"
-              eyebrow="Culinary Experience"
-              title="Our Menu & Dining"
-              intro="Discover a delicious selection of locally inspired dishes, fresh seasonal ingredients, and flavorful meals crafted with care to satisfy every appetite at The Shrub Lodge."
+              eyebrow={restaurantIntro.eyebrow}
+              title={restaurantIntro.title}
+              intro={restaurantIntro.intro}
             />
             <p className="mt-4 text-base leading-relaxed text-forest-800/80">
-              Whether you are gearing up for an early game drive in Zambezi National Park or returning from an exhilarating day at the Falls, our kitchen prepares wholesome, delectable breakfasts, light lunches, and hearty multi-course dinners tailored to your taste.
+              {restaurantIntro.body}
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <ButtonLink
-                href="/the-shrub-lodge-menu.pdf"
+                href={restaurantIntro.menuHref}
                 target="_blank"
                 rel="noopener noreferrer"
               >

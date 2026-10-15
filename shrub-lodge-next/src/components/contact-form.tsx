@@ -4,15 +4,18 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { siteConfig } from "@/lib/site";
 
 const schema = z.object({
   firstName: z.string().min(1, "Please enter your first name"),
   lastName: z.string().min(1, "Please enter your last name"),
   email: z.string().min(1, "Please enter your email").email("Enter a valid email address"),
   message: z.string().min(1, "Please tell us a little about your plans"),
+  // Honeypot field: invisible to humans, bots tend to fill it in.
+  company: z.string().max(0).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -22,6 +25,7 @@ const fieldClass =
 
 export function ContactForm() {
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -29,11 +33,37 @@ export function ContactForm() {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
-  async function onSubmit(_values: FormValues) {
-    // Demo handler. Wire this up to your email/CRM endpoint (e.g. a Route Handler).
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    setSent(true);
-    reset();
+  async function onSubmit(values: FormValues) {
+    setError(null);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as {
+          error?: string;
+          detail?: string;
+        } | null;
+
+        setError(
+          payload?.detail ??
+            payload?.error ??
+            "Sorry, we couldn't send your message. Please email us directly instead.",
+        );
+        return;
+      }
+
+      setSent(true);
+      reset();
+    } catch {
+      setError(
+        "Sorry, we couldn't reach our server. Please email us or call us directly.",
+      );
+    }
   }
 
   if (sent) {
@@ -55,7 +85,7 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} className="relative flex flex-col gap-5" noValidate>
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex min-w-0 flex-col gap-2">
           <label htmlFor="firstName" className="text-sm font-medium text-forest-900">
@@ -118,6 +148,35 @@ export function ContactForm() {
           <span className="text-xs text-red-600">{errors.message.message}</span>
         ) : null}
       </div>
+
+      {/* Honeypot — hidden from humans, catches spam bots */}
+      <div className="absolute -left-[9999px]" aria-hidden="true">
+        <label htmlFor="company">Company</label>
+        <input id="company" type="text" tabIndex={-1} autoComplete="off" {...register("company")} />
+      </div>
+
+      {error ? (
+        <div
+          role="alert"
+          className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+        >
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>
+            {error}{" "}
+            <a
+              href={`mailto:${siteConfig.email.reservations}`}
+              className="font-semibold underline underline-offset-2"
+            >
+              {siteConfig.email.reservations}
+            </a>{" "}
+            or call{" "}
+            <a href={`tel:${siteConfig.phone.reservations}`} className="font-semibold underline underline-offset-2">
+              {siteConfig.phoneDisplay.reservations}
+            </a>
+            .
+          </span>
+        </div>
+      ) : null}
 
       <Button type="submit" disabled={isSubmitting} className="self-start">
         {isSubmitting ? "Sending..." : "Send"}
