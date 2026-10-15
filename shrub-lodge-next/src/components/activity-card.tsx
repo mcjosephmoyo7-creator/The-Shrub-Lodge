@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { ButtonLink } from "@/components/ui/button";
 import { wix } from "@/lib/images";
-import { siteConfig } from "@/lib/site";
 import type { Activity } from "@/lib/content/activities";
 
 export function ActivityCard({ activity }: { activity: Activity }) {
@@ -27,7 +26,9 @@ export function ActivityCard({ activity }: { activity: Activity }) {
           {activity.description}
         </p>
         <ButtonLink
-          href={siteConfig.bookingHref}
+          href={activity.bookingUrl}
+          target="_blank"
+          rel="noreferrer noopener"
           variant="outline"
           className="self-start px-5 py-2.5"
         >
