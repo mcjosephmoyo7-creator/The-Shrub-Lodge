@@ -17,9 +17,18 @@ import { rooms } from "@/lib/content/rooms";
 import { amenities, amenitiesIntro } from "@/lib/content/amenities";
 
 
+// Rotating hero: opens on Victoria Falls (Mosi-oa-Tunya) then cycles through
+// the lodge's signature activities — scenic Falls, safari, cruises, flights,
+// adrenaline, wildlife and culture.
 const heroImages = [
+  IMAGES.vicFalls, // Victoria Falls — "Mosi-oa-Tunya"
   IMAGES.heroFallsPortrait,
-  IMAGES.heroFalls,
+  IMAGES.safari,
+  IMAGES.cruises,
+  IMAGES.aerial,
+  IMAGES.adrenaline,
+  IMAGES.animals,
+  IMAGES.cultural,
   IMAGES.heroFallsTall,
 ];
 
@@ -55,11 +64,6 @@ const lodgeMoments = [
     title: "Room to unwind",
     image: IMAGES.roomDetail1,
     alt: "A thoughtfully prepared room at The Shrub Lodge",
-  },
-  {
-    title: "Garden moments",
-    image: IMAGES.lodgeGarden,
-    alt: "Lush garden at The Shrub Lodge",
   },
   {
     title: "The wonder of the Falls",
@@ -190,10 +194,10 @@ export default function HomePage() {
             <SectionHeading
               eyebrow="A little look around"
               title="Find your moment at The Shrub"
-              intro="From a warm welcome and peaceful garden to the wonders just beyond the lodge, take a closer look at your Victoria Falls escape."
+              intro="From a warm welcome and restful rooms to the wonders just beyond the lodge, take a closer look at your Victoria Falls escape."
             />
           </Reveal>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {lodgeMoments.map((moment, index) => (
               <Reveal key={moment.title} delay={index * 75}>
                 <figure className="group relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-forest-900 shadow-md">
@@ -201,7 +205,7 @@ export default function HomePage() {
                     src={wix(moment.image, 4 / 5)}
                     alt={moment.alt}
                     fill
-                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div
@@ -238,14 +242,27 @@ export default function HomePage() {
       <section className="bg-white py-20 sm:py-24">
         <Container className="grid items-center gap-12 lg:grid-cols-2">
           <Reveal>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl">
-              <Image
-                src={wix(IMAGES.heroFallsTall, 4 / 3)}
-                alt="Adventures at Victoria Falls"
-                fill
-                sizes="(min-width: 1024px) 45vw, 100vw"
-                className="object-cover"
-              />
+            <div className="relative">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl">
+                <Image
+                  src={wix(IMAGES.vicFalls, 4 / 3)}
+                  alt="Victoria Falls — Mosi-oa-Tunya, ‘the smoke that thunders’"
+                  fill
+                  sizes="(min-width: 1024px) 45vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="absolute -bottom-6 -right-4 hidden w-2/5 overflow-hidden rounded-[1.5rem] border-4 border-white shadow-xl sm:block">
+                <div className="relative aspect-[4/3]">
+                  <Image
+                    src={wix(IMAGES.heroFallsTall, 4 / 3)}
+                    alt="Adventures at Victoria Falls"
+                    fill
+                    sizes="(min-width: 1024px) 18vw, 40vw"
+                    className="object-cover"
+                  />
+                </div>
+              </div>
             </div>
           </Reveal>
           <Reveal delay={120}>
