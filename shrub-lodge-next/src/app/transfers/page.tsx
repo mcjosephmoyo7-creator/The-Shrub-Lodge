@@ -19,7 +19,7 @@ export default function TransfersPage() {
         eyebrow="Activities"
         title={transfers.title}
         subtitle={transfers.description}
-        image={IMAGES.transfers}
+        image={IMAGES.transfersHero}
       />
 
       <section className="bg-sand-50 py-20 sm:py-24">

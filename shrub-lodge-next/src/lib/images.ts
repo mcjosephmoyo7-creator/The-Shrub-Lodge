@@ -125,6 +125,7 @@ export const IMAGES = {
 
   // Page heroes
   aboutHero: "48e288_da212190c9954f0e929153b6c198b3c2~mv2.jpg",
+  transfersHero: "83df1a_8919c4d2062d4b1288d81b7fc479acfa~mv2.jpeg",
 
   // Activity Category Heroes (Exact matches from theshrublodge.com)
   vicFalls: "63da5c_42ec6b463ef94889bafa3398faa84130~mv2.jpg",
