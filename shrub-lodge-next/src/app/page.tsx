@@ -35,7 +35,8 @@ const heroImages = [
 // The gallery gathers every lodge and adventure photograph from
 // theshrublodge.com's "Comfort Inside, Adventure Outside" area — comfort shots
 // (rooms, pool, garden, dining terrace) alongside adventure shots (the Falls) —
-// with no repeats.
+// with no repeats, plus the four photos from the site's
+// "Explore With The Shrub Lodge" section.
 const comfortAdventurePhotos = [
   IMAGES.lodgePool,
   IMAGES.lodgeExterior,
@@ -52,6 +53,10 @@ const comfortAdventurePhotos = [
   IMAGES.heroFalls,
   IMAGES.heroFallsTall,
   IMAGES.heroFallsPortrait,
+  IMAGES.explore1,
+  IMAGES.explore2,
+  IMAGES.explore3,
+  IMAGES.explore4,
 ];
 
 const lodgeMoments = [

@@ -211,6 +211,13 @@ export const IMAGES = {
   simunye: "63da5c_c73fd5a5ba5643ea92b7d6ffb744dc3c~mv2.jpg",
   bomaInternational: "63da5c_fd798a64c4e44ff0ab09ed8f097fb01b~mv2.jpg",
   bomaResident: "63da5c_b8b9a0f0c3d74436afafc8c238a4ad2b~mv2.jpg",
+
+  // "Explore With The Shrub Lodge" gallery — lifted straight from the
+  // Explore section on theshrublodge.com
+  explore1: "83df1a_f33b18d48c6e4784a165b1e9b42f316d~mv2.png",
+  explore2: "83df1a_8c1e459afcba47ff944e8b10018b7428~mv2.png",
+  explore3: "83df1a_1d98a9db3cb446558b53dce129adaa5d~mv2.png",
+  explore4: "83df1a_fb575ac1d057422ebd2b94b85d5184ea~mv2.png",
 } as const;
 
 export type ImageKey = keyof typeof IMAGES;
