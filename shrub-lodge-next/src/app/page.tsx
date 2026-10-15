@@ -242,27 +242,14 @@ export default function HomePage() {
       <section className="bg-white py-20 sm:py-24">
         <Container className="grid items-center gap-12 lg:grid-cols-2">
           <Reveal>
-            <div className="relative">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl">
-                <Image
-                  src={wix(IMAGES.vicFalls, 4 / 3)}
-                  alt="Victoria Falls — Mosi-oa-Tunya, ‘the smoke that thunders’"
-                  fill
-                  sizes="(min-width: 1024px) 45vw, 100vw"
-                  className="object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-6 -right-4 hidden w-2/5 overflow-hidden rounded-[1.5rem] border-4 border-white shadow-xl sm:block">
-                <div className="relative aspect-[4/3]">
-                  <Image
-                    src={wix(IMAGES.heroFallsTall, 4 / 3)}
-                    alt="Adventures at Victoria Falls"
-                    fill
-                    sizes="(min-width: 1024px) 18vw, 40vw"
-                    className="object-cover"
-                  />
-                </div>
-              </div>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-xl">
+              <Image
+                src={wix(IMAGES.vicFalls, 4 / 3)}
+                alt="Victoria Falls — Mosi-oa-Tunya, ‘the smoke that thunders’"
+                fill
+                sizes="(min-width: 1024px) 45vw, 100vw"
+                className="object-cover"
+              />
             </div>
           </Reveal>
           <Reveal delay={120}>
