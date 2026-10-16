@@ -93,7 +93,10 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b transition-[transform,background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out motion-reduce:transition-none",
+        // `bg-no-repeat` keeps the transparent (over-hero) gradient from tiling
+        // into the 1px bottom-border strip, which otherwise paints the
+        // gradient's first stop as a dark hairline seam above the hero.
+        "sticky top-0 z-50 border-b bg-no-repeat transition-[transform,background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out motion-reduce:transition-none",
         hidden && !open ? "-translate-y-full" : "translate-y-0",
         // Pull the hero photo up underneath the header so the header floats
         // over the image, the way Insika Lodge's header does.
