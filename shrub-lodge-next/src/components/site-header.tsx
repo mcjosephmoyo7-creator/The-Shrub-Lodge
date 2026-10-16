@@ -99,12 +99,14 @@ export function SiteHeader() {
         "sticky top-0 z-50 border-b bg-no-repeat transition-[transform,background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out motion-reduce:transition-none",
         hidden && !open ? "-translate-y-full" : "translate-y-0",
         // Pull the hero photo up underneath the header so the header floats
-        // over the image, the way Insika Lodge's header does.
+        // over the image, the way Insika Lodge's header does. The border is
+        // dropped while transparent so the header is exactly 80px tall and
+        // meets the hero with no 1px seam of background or border colour.
         overHero && "-mb-20",
         scrolled
           ? "border-sand-300/70 bg-white/85 shadow-md shadow-forest-950/5 backdrop-blur-md"
           : overHero
-            ? "border-transparent bg-gradient-to-b from-black/30 via-black/10 to-transparent"
+            ? "border-b-0 bg-gradient-to-b from-black/30 via-black/10 to-transparent"
             : "border-transparent bg-forest-950/80 backdrop-blur-md",
       )}
     >
