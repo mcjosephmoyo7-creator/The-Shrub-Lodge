@@ -50,7 +50,7 @@ export function HeroMedia({
           <HeroPicture
             image={image}
             variant={variant}
-            priority={priority && index < 3}
+            priority={priority && index === 0}
           />
         </div>
       ))}

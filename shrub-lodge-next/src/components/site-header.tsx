@@ -16,31 +16,27 @@ function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-// Pages that open with a hero photo behind the header. On those pages the
-// header floats over the image and is transparent until the guest scrolls.
-const HERO_PATHS = new Set([
-  "/",
-  "/about",
-  "/activities",
-  "/contact",
-  "/restaurant",
-  "/transfers",
-]);
-
-function hasHero(pathname: string): boolean {
-  return HERO_PATHS.has(pathname) || pathname.startsWith("/activities/");
+// Only the home page floats the header transparently over its hero photo.
+// Every other page shows the solid, opaque header from the very top of the
+// page, so there is no transparent bar sitting over the content.
+function isHomeHeader(pathname: string): boolean {
+  return pathname === "/";
 }
 
 export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolledState, setScrolledState] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [mobileActivitiesOpen, setMobileActivitiesOpen] = useState(false);
   const openRef = useRef(false);
 
-  // Transparent-over-the-photo state only where there is a photo behind us.
-  const overHero = hasHero(pathname);
+  // Home page only: header floats transparently over the hero photo.
+  const overHero = isHomeHeader(pathname);
+
+  // Every other page uses the opaque, "scrolled" header look from the very top
+  // of the page, so the bar always carries its background colour.
+  const scrolled = scrolledState || !overHero;
 
   useEffect(() => {
     setOpen(false);
@@ -64,7 +60,7 @@ export function SiteHeader() {
       const y = window.scrollY;
       const delta = y - lastY;
 
-      setScrolled(y > 12);
+      setScrolledState(y > 12);
 
       if (openRef.current) {
         setHidden(false);

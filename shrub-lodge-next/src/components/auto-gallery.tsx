@@ -43,7 +43,7 @@ export function AutoGallery({
                 aria-hidden={index >= row.length}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={wixFit(photo, 720)} alt="" loading="lazy" decoding="async" />
+                <img src={wixFit(photo, 480)} alt="" loading="lazy" decoding="async" />
               </li>
             ))}
           </ul>
