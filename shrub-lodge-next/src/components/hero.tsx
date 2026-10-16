@@ -35,7 +35,9 @@ export function Hero({
     <section
       className={cn(
         "relative flex items-center overflow-hidden bg-forest-950",
-        size === "full" ? "min-h-[88vh]" : "min-h-[48vh]",
+        size === "full"
+          ? "min-h-[100vh] min-h-[100svh] lg:min-h-[100vh] [@supports(height:100svh)]:min-h-[100svh]"
+          : "min-h-[46vh] md:min-h-[52vh] lg:min-h-[58vh]",
         className,
       )}
     >
@@ -52,7 +54,7 @@ export function Hero({
         </div>
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-forest-950/95 via-forest-950/65 to-forest-950/45" />
-      <Container className="relative z-10 py-24 sm:py-28">
+      <Container className={cn("relative z-10", size === "full" ? "pt-28 pb-16 sm:pt-32 sm:pb-24" : "py-20 sm:py-24")}>
         <div
           className={cn(
             "flex flex-col gap-5",

@@ -100,11 +100,11 @@ export function SiteHeader() {
         // stops the gradient from extending into the 1px border strip, where
         // it would otherwise tile and paint its first stop (black/30) as a
         // dark hairline seam right above the hero.
-        overHero && "-mb-[81px]",
+        overHero && (scrolled ? "-mb-[5.0625rem]" : "-mb-[5rem]"),
         scrolled
           ? "border-sand-300/70 bg-white/85 shadow-md shadow-forest-950/5 backdrop-blur-md"
           : overHero
-            ? "border-transparent bg-clip-padding bg-gradient-to-b from-black/30 via-black/10 to-transparent"
+            ? "border-b-0 bg-clip-padding bg-gradient-to-b from-black/30 via-black/10 to-transparent"
             : "border-transparent bg-forest-950/80 backdrop-blur-md",
       )}
     >
