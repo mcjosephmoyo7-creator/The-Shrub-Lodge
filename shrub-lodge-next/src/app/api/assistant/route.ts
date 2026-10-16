@@ -31,12 +31,16 @@ function isRateLimited(key: string): boolean {
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),
-  content: z.string().min(1, "Message cannot be empty.").max(1000, "Message is too long."),
+  content: z.string().min(1, "Please type a message."),
 });
 
 const bodySchema = z.object({
-  messages: z.array(messageSchema).min(1).max(12),
+  messages: z.array(messageSchema).min(1),
 });
+
+/** Guards against abuse only — long questions are welcome and simply trimmed. */
+const MAX_MESSAGE_CHARS = 8_000;
+const MAX_HISTORY = 30;
 
 /**
  * Chat endpoint for the site assistant.
@@ -74,7 +78,13 @@ export async function POST(request: Request) {
     );
   }
 
-  const messages = parsed.data.messages;
+  const messages = parsed.data.messages
+    .slice(-MAX_HISTORY)
+    .map((message) => ({
+      ...message,
+      content: message.content.slice(0, MAX_MESSAGE_CHARS),
+    }));
+
   const lastUserMessage = [...messages].reverse().find((message) => message.role === "user");
 
   if (!lastUserMessage) {

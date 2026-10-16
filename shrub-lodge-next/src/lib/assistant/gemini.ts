@@ -7,11 +7,21 @@ export type AssistantMessage = {
   content: string;
 };
 
-const DEFAULT_MODEL = "gemini-2.5-flash";
+const DEFAULT_MODEL = "gemini-flash-latest";
 
 function modelCandidates(): string[] {
   const configured = process.env.GEMINI_MODEL?.trim();
-  const fallbacks = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+  // Google's model line-up and per-model availability change often, and the
+  // free tier can return 503 "high demand" for a busy model. We try the
+  // "latest" alias first (auto-upgrades), then a spread of concrete models so
+  // the assistant keeps working as long as any of them is available.
+  const fallbacks = [
+    DEFAULT_MODEL,
+    "gemini-3.6-flash",
+    "gemini-3.5-flash",
+    "gemini-flash-lite-latest",
+    "gemini-3.1-flash-lite",
+  ];
   return [...new Set([configured, ...fallbacks].filter(Boolean) as string[])];
 }
 
@@ -22,19 +32,16 @@ export function isAssistantConfigured(): boolean {
 function buildSystemPrompt(): string {
   const reservations = `${siteConfig.email.reservations} · ${siteConfig.phoneDisplay.reservations}`;
 
-  return `You are "Shrub Assist", the friendly virtual concierge for ${siteConfig.name}, a family-run 3-star lodge in Victoria Falls, Zimbabwe.
+  return `You are "Shrub Assist", the friendly virtual concierge for ${siteConfig.name}, a family-run 3-star lodge in Victoria Falls, Zimbabwe. You are happy to answer any question a guest asks.
 
-HOW TO ANSWER — follow these rules exactly:
-1. Answer ONLY using the KNOWLEDGE DOCUMENT below. It is your single source of truth.
-2. Never invent facts. If it is not in the knowledge — for example live availability, exact pickup times, activity durations, minimum ages, weight/health limits, seasonal date ranges, or any rating — say you don't have that detail and refer the guest to our team (${reservations}). Never guess.
+HOW TO ANSWER — follow these rules:
+1. Be genuinely helpful and answer the guest's actual question, whatever it is — including general questions about Victoria Falls, Zimbabwe, travel, wildlife, weather, currency, safety, local customs, packing, and everyday knowledge.
+2. For anything specific to ${siteConfig.name} — activities, prices, rooms, transfers, the restaurant, contact details, hours or policies — use ONLY the KNOWLEDGE DOCUMENT below. Never invent lodge details, prices, availability or policies. If the knowledge doesn't cover it, say you don't have that detail and point the guest to our team (${reservations}).
 3. Never state a star rating, review score or review count. The "guest favourites" list is a hand-picked shortlist: describe it as "the activities guests love most", never as rated or scored.
-4. Quote prices exactly as listed, in US dollars. Remind guests prices are per person and may change, so the booking page or our team confirms the final amount.
+4. Quote lodge prices exactly as listed, in US dollars, and mention they are per person and can change.
 5. If a guest is unsure what to do, enthusiastically recommend up to three guest favourites, best fit first, each with a short reason and its booking link.
-6. Be warm, concise and human: at most about 120 words. Use plain text with short lines or "-" bullets. Put any link on its own line. Never use markdown tables, headings or code.
-7. Only ever mention our own listed activities, rooms, transfers and restaurant. Never suggest competitors or experiences we don't offer.
-8. If asked something off-topic, politely steer the conversation back to The Shrub Lodge and planning their Victoria Falls trip.
-
-When you don't know something, use this shape: "I don't have that detail, but our team can confirm — ${reservations}."
+6. When you are not certain about a general fact, say so honestly instead of guessing — accuracy matters more than sounding confident. Today's date is ${new Date().toISOString().slice(0, 10)}.
+7. Be warm, clear and human. Plain text with short lines or "-" bullets. Put any link on its own line. Never use markdown tables, headings or code. Give a complete answer — longer detail is fine when the question needs it.
 
 Our curated guest favourites, in priority order: ${guestFavourites.map((favourite) => favourite.activity).join(", ")}.
 
@@ -49,6 +56,7 @@ async function callGemini(
   apiKey: string,
   messages: AssistantMessage[],
   signal: AbortSignal,
+  attempt = 0,
 ): Promise<string | null> {
   const contents = messages.map((message) => ({
     role: message.role === "user" ? "user" : "model",
@@ -67,9 +75,9 @@ async function callGemini(
         systemInstruction: { parts: [{ text: buildSystemPrompt() }] },
         contents,
         generationConfig: {
-          temperature: 0.35,
-          topP: 0.9,
-          maxOutputTokens: 800,
+          temperature: 0.4,
+          topP: 0.95,
+          maxOutputTokens: 1500,
         },
       }),
       signal,
@@ -77,6 +85,20 @@ async function callGemini(
   );
 
   if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    const busy = response.status === 429 || response.status === 503;
+
+    console.warn(
+      `[assistant] Gemini ${model} responded ${response.status}${busy ? " (model busy)" : ""}`,
+      detail.slice(0, 160),
+    );
+
+    // A busy model often succeeds a moment later, so retry once before moving on.
+    if (busy && attempt === 0) {
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      return callGemini(model, apiKey, messages, signal, attempt + 1);
+    }
+
     return null;
   }
 
@@ -104,15 +126,17 @@ export async function askGemini(
   if (!apiKey) return null;
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20_000);
+  // Several models may each retry once when they report being busy, so allow
+  // a generous window before giving up and using the offline engine.
+  const timeout = setTimeout(() => controller.abort(), 30_000);
 
   try {
     for (const model of modelCandidates()) {
       try {
         const answer = await callGemini(model, apiKey, messages, controller.signal);
         if (answer) return answer;
-      } catch {
-        // Try the next model name before giving up.
+      } catch (error) {
+        console.warn(`[assistant] Gemini ${model} failed`, error);
       }
     }
     return null;

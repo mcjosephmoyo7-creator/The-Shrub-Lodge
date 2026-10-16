@@ -188,14 +188,27 @@ export function offlineAnswer(question: string): string {
 
   const activityMatch = bestActivityMatch(question, tokens);
 
+  // A "strong" match means the guest clearly named one activity (the whole
+  // phrase appears in its name, or most of the words do). A weak match — e.g.
+  // the word "safari" inside "what should I pack for a safari?" — should not
+  // stop us recommending, so only strong matches short-circuit other answers.
+  const strongActivityMatch = (() => {
+    if (!activityMatch) return undefined;
+    const phrase = normalise(question);
+    const phraseMatches =
+      phrase.length > 2 && activityMatch.name.toLowerCase().includes(phrase);
+    const scoreIsHigh = scoreActivity(question, tokens, activityMatch) >= 8;
+    return phraseMatches || scoreIsHigh ? activityMatch : undefined;
+  })();
+
   // A specific activity was named alongside a price question.
-  if (activityMatch && mentionsPrice) {
+  if (strongActivityMatch && mentionsPrice) {
     return priceAnswer(question, tokens);
   }
 
   // Recommendation request, or the guest described an interest such as
   // "I love wildlife safaris" — either way, suggest guest favourites.
-  if ((wantsRecommendation || guessInterests(question).length > 0) && !activityMatch) {
+  if ((wantsRecommendation || guessInterests(question).length > 0) && !strongActivityMatch) {
     return recommendFromFavourites(question);
   }
 

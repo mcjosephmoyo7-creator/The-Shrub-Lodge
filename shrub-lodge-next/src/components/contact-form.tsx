@@ -36,6 +36,56 @@ export function ContactForm() {
   async function onSubmit(values: FormValues) {
     setError(null);
 
+    // Honeypot: if filled, silently pretend success without sending.
+    if (values.company) {
+      setSent(true);
+      reset();
+      return;
+    }
+
+    const web3formsKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+    let web3formsError: string | null = null;
+
+    // Web3Forms blocks server-side requests (Cloudflare challenge), so when a
+    // key is configured we submit straight from the browser — its intended use.
+    if (web3formsKey) {
+      try {
+        const response = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            access_key: web3formsKey,
+            subject: `New website enquiry from ${values.firstName} ${values.lastName}`,
+            from_name: `${siteConfig.name} website`,
+            name: `${values.firstName} ${values.lastName}`,
+            email: values.email,
+            replyto: values.email,
+            message: values.message,
+            botcheck: false,
+          }),
+        });
+
+        const payload = (await response.json().catch(() => null)) as {
+          success?: boolean;
+          message?: string;
+        } | null;
+
+        if (response.ok && payload?.success) {
+          setSent(true);
+          reset();
+          return;
+        }
+
+        web3formsError = payload?.message ?? null;
+      } catch {
+        // Network problem — fall through and try our own endpoint.
+      }
+    }
+
+    // Fall back to our own endpoint (e.g. Resend is configured, or a retry).
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
@@ -43,25 +93,27 @@ export function ContactForm() {
         body: JSON.stringify(values),
       });
 
-      if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as {
-          error?: string;
-          detail?: string;
-        } | null;
-
-        setError(
-          payload?.detail ??
-            payload?.error ??
-            "Sorry, we couldn't send your message. Please email us directly instead.",
-        );
+      if (response.ok) {
+        setSent(true);
+        reset();
         return;
       }
 
-      setSent(true);
-      reset();
+      const payload = (await response.json().catch(() => null)) as {
+        error?: string;
+        detail?: string;
+      } | null;
+
+      setError(
+        payload?.detail ??
+          payload?.error ??
+          web3formsError ??
+          "Sorry, we couldn't send your message. Please email us directly instead.",
+      );
     } catch {
       setError(
-        "Sorry, we couldn't reach our server. Please email us or call us directly.",
+        web3formsError ??
+          "Sorry, we couldn't reach our server. Please email us or call us directly.",
       );
     }
   }

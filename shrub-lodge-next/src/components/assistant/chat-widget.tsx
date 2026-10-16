@@ -115,7 +115,7 @@ export function AssistantWidget() {
 
   const nextId = useRef(1);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const inFlight = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -316,19 +316,25 @@ export function AssistantWidget() {
           </div>
         ) : null}
 
-        <form onSubmit={onSubmit} className="flex items-center gap-2 border-t border-sand-200 bg-white p-3">
+        <form onSubmit={onSubmit} className="flex items-end gap-2 border-t border-sand-200 bg-white p-3">
           <label htmlFor="assistant-input" className="sr-only">
             Ask a question
           </label>
-          <input
+          <textarea
             id="assistant-input"
             ref={inputRef}
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                void send(draft);
+              }
+            }}
+            rows={1}
             placeholder="Ask about activities, prices, rooms..."
             autoComplete="off"
-            maxLength={500}
-            className="min-w-0 flex-1 rounded-full border border-sand-300 bg-sand-50 px-4 py-2.5 text-sm text-forest-900 placeholder:text-forest-800/40 focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30"
+            className="max-h-32 min-w-0 flex-1 resize-none rounded-2xl border border-sand-300 bg-sand-50 px-4 py-2.5 text-sm text-forest-900 placeholder:text-forest-800/40 focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30"
           />
           <button
             type="submit"

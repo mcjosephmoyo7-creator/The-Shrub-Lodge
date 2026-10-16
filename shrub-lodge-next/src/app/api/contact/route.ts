@@ -95,7 +95,26 @@ async function sendWithWeb3Forms(
       botcheck: false,
     }),
   });
-  return response.ok;
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => "");
+    console.error("[contact] Web3Forms HTTP", response.status, body);
+    return false;
+  }
+
+  // Web3Forms reports failures in the body (with HTTP 200), so read it.
+  const payload = (await response.json().catch(() => null)) as
+    | { success?: boolean; message?: string }
+    | null;
+
+  if (payload && typeof payload.success === "boolean") {
+    if (!payload.success) {
+      console.error("[contact] Web3Forms rejected the submission:", payload.message);
+    }
+    return payload.success;
+  }
+
+  return true;
 }
 
 async function sendWithResend(
