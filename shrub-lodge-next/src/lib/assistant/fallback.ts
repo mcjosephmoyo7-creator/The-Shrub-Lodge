@@ -13,6 +13,51 @@ import {
   restaurantIntro,
 } from "@/lib/content/restaurant";
 
+/** A single earlier turn in the conversation, used for offline memory. */
+export type PriorMessage = { role: "user" | "assistant"; content: string };
+
+const RECAP_PATTERN =
+  /(what (we|i) (talked|discussed|said|asked|covered|chatted)|what (did|have) (we|i) (talk|discuss|ask|cover|say)|(history|recap|summary|summarise|summarize|overview) of (what|our|this|the)|(chat|conversation) (so far|history)|remind me (what|of)|go over (what|it) again|\bre-?cap\b|what was (i|we) (asking|talking|saying)|repeat (that|what)|^history$|^recap$)/;
+
+const FOLLOW_UP_REFERENCE = /(^|\s)(it|that|this|those|these|them|the one|there)(\s|$|\?|\.|!)/;
+
+/** The activities most recently mentioned in the conversation, latest first. */
+function recentlyDiscussedActivities(history: PriorMessage[]): ActivityWithCategory[] {
+  const found: ActivityWithCategory[] = [];
+  for (let index = history.length - 1; index >= 0 && found.length < 6; index -= 1) {
+    const text = history[index].content.toLowerCase();
+    for (const activity of allActivities) {
+      if (text.includes(activity.name.toLowerCase()) && !found.includes(activity)) {
+        found.push(activity);
+      }
+    }
+  }
+  return found;
+}
+
+function recapAnswer(history: PriorMessage[]): string {
+  const asked = history
+    .filter((message) => message.role === "user")
+    .map((message) => message.content.trim())
+    .filter(Boolean);
+
+  if (asked.length === 0) {
+    return [
+      "We haven't covered anything yet — this is the start of our chat. 🌿",
+      "Ask me about activities and prices, rooms, transfers, the restaurant or how to book, and I'll remember it as we go.",
+    ].join("\n");
+  }
+
+  const topics = asked.slice(-8);
+  return [
+    "Here's a quick recap of our chat so far:",
+    "",
+    ...topics.map((question, index) => `${index + 1}. You asked: ${question}`),
+    "",
+    "I'll keep the whole conversation in mind — ask me to go deeper on any of these, or start something new.",
+  ].join("\n");
+}
+
 const STOPWORDS = new Set([
   "the", "and", "for", "you", "your", "with", "what", "which", "that", "this",
   "can", "could", "would", "should", "have", "has", "are", "was", "were", "any",
@@ -88,8 +133,7 @@ function guessInterests(query: string): string[] {
   return matches;
 }
 
-function recommendFromFavourites(query: string): string {
-  const interests = guessInterests(query);
+function recommendFromFavourites(query: string, interests: string[] = guessInterests(query)): string {
   const ranked = [...resolvedFavourites].sort((a, b) => {
     const score = (favourite: typeof a) =>
       interests.reduce(
@@ -164,9 +208,14 @@ function priceAnswer(query: string, tokens: string[]): string {
  * Deterministic, fully offline answer engine. It only ever quotes data that is
  * defined in the website's own content files, so it cannot invent or mislead.
  */
-export function offlineAnswer(question: string): string {
+export function offlineAnswer(question: string, history: PriorMessage[] = []): string {
   const text = normalise(question);
   const tokens = tokenise(question);
+
+  // "What did we talk about?" — answer from the conversation itself.
+  if (RECAP_PATTERN.test(text)) {
+    return recapAnswer(history);
+  }
 
   if (!text) {
     return "What would you like to know? I can help with activities and prices, things to do in Victoria Falls, rooms, transfers, the restaurant, or how to book.";
@@ -206,10 +255,27 @@ export function offlineAnswer(question: string): string {
     return priceAnswer(question, tokens);
   }
 
+  const questionInterests = guessInterests(question);
+  // If the guest asks something open like "what do you suggest?" and hasn't
+  // named an interest this time, remember what they told us earlier.
+  const memoryInterests =
+    questionInterests.length === 0 && wantsRecommendation
+      ? guessInterests(
+          history
+            .filter((message) => message.role === "user")
+            .slice(-6)
+            .map((message) => message.content)
+            .join(" "),
+        )
+      : [];
+
   // Recommendation request, or the guest described an interest such as
   // "I love wildlife safaris" — either way, suggest guest favourites.
-  if ((wantsRecommendation || guessInterests(question).length > 0) && !strongActivityMatch) {
-    return recommendFromFavourites(question);
+  if ((wantsRecommendation || questionInterests.length > 0) && !strongActivityMatch) {
+    return recommendFromFavourites(
+      question,
+      questionInterests.length > 0 ? questionInterests : memoryInterests,
+    );
   }
 
   if (/(transfer|airport|pick ?up|pickup|shuttle|taxi|border|kazungula|kasane)/.test(text)) {
@@ -294,6 +360,25 @@ export function offlineAnswer(question: string): string {
       "",
       "Tell me your interests and I'll recommend something, or browse all activities at /activities.",
     ].join("\n");
+  }
+
+  // A short follow-up like "how much is it?" — answer from what we were just
+  // discussing instead of losing the thread.
+  if (
+    mentionsPrice &&
+    !strongActivityMatch &&
+    text.length < 80 &&
+    FOLLOW_UP_REFERENCE.test(text)
+  ) {
+    const discussed = recentlyDiscussedActivities(history);
+    if (discussed.length > 0) {
+      const activity = discussed[0];
+      return [
+        `For ${activity.name}: US$${activity.price} per person.`,
+        activity.description,
+        `You can book it here: ${activity.bookingUrl}`,
+      ].join("\n");
+    }
   }
 
   // Generic pricing questions (cheapest, most expensive, or examples).

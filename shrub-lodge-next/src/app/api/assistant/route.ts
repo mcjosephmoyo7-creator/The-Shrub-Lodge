@@ -94,6 +94,17 @@ export async function POST(request: Request) {
     );
   }
 
+  // Everything before the guest's latest question — used as conversation memory
+  // when the offline engine has to answer.
+  let lastUserIndex = -1;
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    if (messages[index].role === "user") {
+      lastUserIndex = index;
+      break;
+    }
+  }
+  const priorMessages = messages.filter((_, index) => index !== lastUserIndex);
+
   try {
     const answer = await askGemini(messages);
     if (answer) {
@@ -104,7 +115,7 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({
-    reply: offlineAnswer(lastUserMessage.content),
+    reply: offlineAnswer(lastUserMessage.content, priorMessages),
     source: "offline",
   });
 }

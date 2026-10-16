@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Loader2, MessageCircle, Send, X } from "lucide-react";
+import { Loader2, MessageCircle, RotateCcw, Send, X } from "lucide-react";
 import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +26,12 @@ const SUGGESTIONS = [
   "Do you have rooms?",
   "How do I book?",
 ];
+
+// The conversation is remembered in the browser so a guest can reload the page,
+// browse around the site and come back without losing the thread.
+const STORAGE_KEY = "shrub-assist-conversation-v1";
+const MAX_STORED_MESSAGES = 40;
+const MAX_SENT_MESSAGES = 30;
 
 function renderInline(text: string, keyPrefix: string): ReactNode[] {
   const tokens = text.split(
@@ -112,11 +118,80 @@ export function AssistantWidget() {
   const [draft, setDraft] = useState("");
   const [typing, setTyping] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [restored, setRestored] = useState(false);
 
   const nextId = useRef(1);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const inFlight = useRef<AbortController | null>(null);
+
+  // Restore any earlier conversation from this browser (once, after mount so
+  // server rendering stays safe).
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const stored = JSON.parse(raw) as unknown;
+        if (Array.isArray(stored)) {
+          const restoredMessages = stored
+            .filter(
+              (item): item is { role: "user" | "assistant"; content: string } =>
+                Boolean(item) &&
+                typeof item === "object" &&
+                (item as { role?: unknown }).role !== undefined &&
+                ((item as { role: string }).role === "user" ||
+                  (item as { role: string }).role === "assistant") &&
+                typeof (item as { content?: unknown }).content === "string" &&
+                (item as { content: string }).content.trim().length > 0,
+            )
+            .map((item, index) => ({
+              id: index,
+              role: item.role,
+              content: item.content,
+            }));
+
+          if (restoredMessages.length > 0) {
+            setMessages(restoredMessages);
+            nextId.current = restoredMessages.length;
+          }
+        }
+      }
+    } catch {
+      // Ignore unreadable storage and start a fresh conversation.
+    }
+    setRestored(true);
+  }, []);
+
+  // Save the conversation as it grows so it survives a reload or a return visit.
+  useEffect(() => {
+    if (!restored) return;
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(
+          messages
+            .slice(-MAX_STORED_MESSAGES)
+            .map(({ role, content }) => ({ role, content })),
+        ),
+      );
+    } catch {
+      // Storage may be unavailable (private mode) — memory still works in-session.
+    }
+  }, [messages, restored]);
+
+  function startOver() {
+    inFlight.current?.abort();
+    inFlight.current = null;
+    setTyping(false);
+    setError(null);
+    setMessages([GREETING]);
+    nextId.current = 1;
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Nothing we can do if storage is unavailable.
+    }
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -160,7 +235,9 @@ export function AssistantWidget() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: history.slice(-8).map(({ role, content }) => ({ role, content })),
+          messages: history
+            .slice(-MAX_SENT_MESSAGES)
+            .map(({ role, content }) => ({ role, content })),
         }),
         signal: controller.signal,
       });
@@ -252,6 +329,16 @@ export function AssistantWidget() {
               Your Victoria Falls concierge
             </span>
           </span>
+          <button
+            type="button"
+            onClick={startOver}
+            aria-label="Start a new conversation"
+            title="Start a new conversation"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sand-200 transition-colors hover:bg-white/10 disabled:opacity-40"
+            disabled={messages.length <= 1}
+          >
+            <RotateCcw className="h-4 w-4" aria-hidden="true" />
+          </button>
           <button
             type="button"
             onClick={() => setOpen(false)}

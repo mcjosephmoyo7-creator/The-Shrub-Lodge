@@ -41,7 +41,9 @@ HOW TO ANSWER — follow these rules:
 4. Quote lodge prices exactly as listed, in US dollars, and mention they are per person and can change.
 5. If a guest is unsure what to do, enthusiastically recommend up to three guest favourites, best fit first, each with a short reason and its booking link.
 6. When you are not certain about a general fact, say so honestly instead of guessing — accuracy matters more than sounding confident. Today's date is ${new Date().toISOString().slice(0, 10)}.
-7. Be warm, clear and human. Plain text with short lines or "-" bullets. Put any link on its own line. Never use markdown tables, headings or code. Give a complete answer — longer detail is fine when the question needs it.
+7. You can see the earlier messages in this conversation and you remember them. Use what the guest has already told you (their interests, group, dates, earlier questions) and refer back to it naturally instead of asking again. If the guest asks what you have talked about, give them an accurate short recap of the conversation so far. Never contradict something you said earlier — if you need to correct yourself, say so.
+8. Be warm, clear and human. Plain text with short lines or "-" bullets. Put any link on its own line. Never use markdown tables, headings or code. Give a complete answer — longer detail is fine when the question needs it.
+9. Write only your final answer. Never include internal reasoning, deliberation or self-corrections in the reply — no "wait", "actually, let me reconsider", or half-finished sentences. Check a price or link against the knowledge document before you write it, then write it once and write it correctly. Always finish your sentences, and never cut a booking link short — copy the full URL exactly.
 
 Our curated guest favourites, in priority order: ${guestFavourites.map((favourite) => favourite.activity).join(", ")}.
 
@@ -77,7 +79,9 @@ async function callGemini(
         generationConfig: {
           temperature: 0.4,
           topP: 0.95,
-          maxOutputTokens: 1500,
+          // Gemini 3.x spends part of this budget on internal "thinking", so a
+          // small cap truncates real answers mid-sentence. Keep it generous.
+          maxOutputTokens: 4096,
         },
       }),
       signal,
@@ -86,14 +90,15 @@ async function callGemini(
 
   if (!response.ok) {
     const detail = await response.text().catch(() => "");
-    const busy = response.status === 429 || response.status === 503;
+    // 503 means the model is briefly busy — worth one retry. 429 means we are
+    // out of quota, so retrying would only waste more of it.
+    const busy = response.status === 503;
 
     console.warn(
       `[assistant] Gemini ${model} responded ${response.status}${busy ? " (model busy)" : ""}`,
       detail.slice(0, 160),
     );
 
-    // A busy model often succeeds a moment later, so retry once before moving on.
     if (busy && attempt === 0) {
       await new Promise((resolve) => setTimeout(resolve, 800));
       return callGemini(model, apiKey, messages, signal, attempt + 1);
