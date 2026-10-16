@@ -32,7 +32,7 @@ export const privacyPolicy: LegalDocument = {
         "The Shrub Lodge",
         "649 Rynard Road",
         "Victoria Falls, Zimbabwe",
-        "Email: mcjosephmoyo7@gmail.com",
+        "Email: reservations@theshrublodge.com",
         "Phone: +263 788 746 909",
         "If you have any questions about this Privacy Policy, please contact us using the details above.",
       ],
@@ -198,7 +198,7 @@ export const privacyPolicy: LegalDocument = {
       list: [
         "The Shrub Lodge",
         "Victoria Falls, Zimbabwe",
-        "Email: mcjosephmoyo7@gmail.com",
+        "Email: reservations@theshrublodge.com",
         "Phone: +263 788 746 909",
       ],
     },
@@ -226,7 +226,7 @@ export const termsAndConditions: LegalDocument = {
       list: [
         "The Shrub Lodge",
         "Victoria Falls, Zimbabwe",
-        "Email: mcjosephmoyo7@gmail.com",
+        "Email: reservations@theshrublodge.com",
         "Phone: +263 788 746 909",
       ],
     },
@@ -433,7 +433,7 @@ export const termsAndConditions: LegalDocument = {
       list: [
         "The Shrub Lodge",
         "Victoria Falls, Zimbabwe",
-        "Email: mcjosephmoyo7@gmail.com",
+        "Email: reservations@theshrublodge.com",
         "Phone: +263 788 746 909",
       ],
     },
