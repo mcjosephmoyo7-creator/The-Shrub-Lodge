@@ -6,10 +6,18 @@ import { siteConfig } from "@/lib/site";
 export function Logo({
   className,
   tone = "light",
+  variant = "full",
 }: {
   className?: string;
   tone?: "light" | "dark";
+  /**
+   * "full" is the logo with the wordmark beside it. "mark" is the logo image
+   * on its own, sized up — used in the site header like other lodges do.
+   */
+  variant?: "full" | "mark";
 }) {
+  const markOnly = variant === "mark";
+
   return (
     <Link
       href="/"
@@ -18,7 +26,8 @@ export function Logo({
     >
       <span
         className={cn(
-          "relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border p-1 transition-all duration-300 group-hover:scale-105",
+          "relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border p-1 transition-all duration-300 group-hover:scale-105",
+          markOnly ? "h-14 w-14" : "h-11 w-11",
           tone === "light"
             ? "border-gold-400/50 bg-forest-900/40 shadow-sm shadow-black/20"
             : "border-forest-900/20 bg-sand-100/80 shadow-sm",
@@ -27,13 +36,13 @@ export function Logo({
         <Image
           src="/images/logo.png"
           alt="The Shrub Lodge logo"
-          width={40}
-          height={40}
+          width={48}
+          height={48}
           priority
           className="h-full w-full object-contain"
         />
       </span>
-      <span className="flex flex-col leading-none">
+      <span className={cn("flex flex-col leading-none", markOnly && "hidden")}>
         <span
           className={cn(
             "font-display text-lg tracking-wide transition-colors duration-300",

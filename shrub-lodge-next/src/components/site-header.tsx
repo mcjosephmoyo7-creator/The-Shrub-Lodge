@@ -16,6 +16,21 @@ function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+// Pages that open with a hero photo behind the header. On those pages the
+// header floats over the image and is transparent until the guest scrolls.
+const HERO_PATHS = new Set([
+  "/",
+  "/about",
+  "/activities",
+  "/contact",
+  "/restaurant",
+  "/transfers",
+]);
+
+function hasHero(pathname: string): boolean {
+  return HERO_PATHS.has(pathname) || pathname.startsWith("/activities/");
+}
+
 export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -23,6 +38,9 @@ export function SiteHeader() {
   const [hidden, setHidden] = useState(false);
   const [mobileActivitiesOpen, setMobileActivitiesOpen] = useState(false);
   const openRef = useRef(false);
+
+  // Transparent-over-the-photo state only where there is a photo behind us.
+  const overHero = hasHero(pathname);
 
   useEffect(() => {
     setOpen(false);
@@ -75,15 +93,20 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b backdrop-blur-md transition-[transform,background-color,border-color,box-shadow] duration-300 ease-out motion-reduce:transition-none",
+        "sticky top-0 z-50 border-b transition-[transform,background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out motion-reduce:transition-none",
         hidden && !open ? "-translate-y-full" : "translate-y-0",
+        // Pull the hero photo up underneath the header so the header floats
+        // over the image, the way Insika Lodge's header does.
+        overHero && "-mb-20",
         scrolled
-          ? "border-sand-300/70 bg-white/85 shadow-md shadow-forest-950/5"
-          : "border-transparent bg-forest-950/80",
+          ? "border-sand-300/70 bg-white/85 shadow-md shadow-forest-950/5 backdrop-blur-md"
+          : overHero
+            ? "border-transparent bg-gradient-to-b from-black/30 via-black/10 to-transparent"
+            : "border-transparent bg-forest-950/80 backdrop-blur-md",
       )}
     >
       <Container className="flex h-20 items-center justify-between gap-4">
-        <Logo tone={scrolled ? "dark" : "light"} />
+        <Logo tone={scrolled ? "dark" : "light"} variant="mark" />
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
           {navigation.map((item) =>
@@ -193,7 +216,7 @@ export function SiteHeader() {
               scrolled ? "border-b border-sand-200" : "border-b border-forest-800",
             )}
           >
-            <Logo tone={scrolled ? "dark" : "light"} />
+            <Logo tone={scrolled ? "dark" : "light"} variant="mark" />
           </div>
           {navigation.map((item) =>
             item.children ? (
