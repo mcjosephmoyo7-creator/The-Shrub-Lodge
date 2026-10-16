@@ -35,7 +35,7 @@ export function Hero({
     <section
       className={cn(
         "relative flex items-center overflow-hidden bg-forest-950",
-        size === "full" ? "min-h-[92vh]" : "min-h-[48vh]",
+        size === "full" ? "min-h-[88vh]" : "min-h-[48vh]",
         className,
       )}
     >
@@ -80,4 +80,3 @@ export function Hero({
     </section>
   );
 }
- 
