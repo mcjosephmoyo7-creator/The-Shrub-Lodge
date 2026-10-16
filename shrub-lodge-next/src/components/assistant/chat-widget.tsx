@@ -231,21 +231,52 @@ export function AssistantWidget() {
     inFlight.current = controller;
 
     try {
-      const response = await fetch("/api/assistant", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: history
-            .slice(-MAX_SENT_MESSAGES)
-            .map(({ role, content }) => ({ role, content })),
-        }),
-        signal: controller.signal,
-      });
+      const request = async () => {
+        return fetch("/api/assistant", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: history
+              .slice(-MAX_SENT_MESSAGES)
+              .map(({ role, content }) => ({ role, content })),
+          }),
+          signal: controller.signal,
+        });
+      };
 
-      const payload = (await response.json().catch(() => null)) as {
+      let response = await request().catch(() => null);
+      if (!response) {
+        if (!controller.signal.aborted) {
+          await new Promise((resolve) => setTimeout(resolve, 700));
+          response = await request().catch(() => null);
+        }
+        if (!response) {
+          if (!controller.signal.aborted) {
+            setError("Sorry, I couldn't get an answer just now. Please try again, or contact us directly.");
+          }
+          return;
+        }
+      }
+
+      let payload = (await response.json().catch(() => null)) as {
         reply?: string;
         error?: string;
       } | null;
+
+      if (!response.ok) {
+        const infraFailure = !payload?.error && (response.status === 404 || response.status >= 500);
+        if (infraFailure && !controller.signal.aborted) {
+          await new Promise((resolve) => setTimeout(resolve, 700));
+          const retryResponse = await request().catch(() => null);
+          if (retryResponse) {
+            response = retryResponse;
+            payload = (await response.json().catch(() => null)) as {
+              reply?: string;
+              error?: string;
+            } | null;
+          }
+        }
+      }
 
       if (!response.ok || !payload?.reply) {
         setError(

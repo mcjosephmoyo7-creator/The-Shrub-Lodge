@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { askGemini } from "@/lib/assistant/gemini";
 import { offlineAnswer } from "@/lib/assistant/fallback";
+import { CONTACT_FALLBACK } from "@/lib/assistant/knowledge";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -114,8 +115,18 @@ export async function POST(request: Request) {
     // Fall through to the offline engine.
   }
 
-  return NextResponse.json({
-    reply: offlineAnswer(lastUserMessage.content, priorMessages),
-    source: "offline",
-  });
+  try {
+    return NextResponse.json({
+      reply: offlineAnswer(lastUserMessage.content, priorMessages),
+      source: "offline",
+    });
+  } catch (error) {
+    // The offline engine is the safety net, so it must never become an
+    // unhandled 500 — the guest still gets a usable, accurate reply.
+    console.error("[assistant] offline engine failed", error);
+    return NextResponse.json({
+      reply: `Sorry — I couldn't put that answer together just now. Our team can help directly: ${CONTACT_FALLBACK}.`,
+      source: "offline",
+    });
+  }
 }

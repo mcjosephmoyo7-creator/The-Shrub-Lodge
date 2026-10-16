@@ -81,6 +81,17 @@ const INTERESTS: Record<string, string[]> = {
   water: ["river", "cruise", "boat", "rafting", "canoe", "fishing", "jetboat", "water"],
 };
 
+const BUDGET_PATTERN =
+  /(cheap|cheapest|budget|affordable|low cost|low-cost|lowest price|lowest-priced|\blowest\b|least expensive|inexpensive|value for money|save money|shoestring|cost effective|cost-effective)/;
+
+const SOLO_PATTERN =
+  /(\balone\b|\bsolo\b|\bsingle\b|by myself|on my own|travell?ing alone)/;
+
+const ACTIVITY_SCOPE =
+  /(activit|things to do|what can i do|experience|tour|trip|excursion|do here|offer|safari|cruise|rafting|adventure|falls|helicopter|game drive)/;
+
+const ROOM_SCOPE = /(room|rooms|stay|sleep|accommodation|accomodation|bed|suite|lodge rooms)/;
+
 function normalise(input: string): string {
   return input.toLowerCase().replace(/[^\p{L}\p{N}$\s'-]/gu, " ").replace(/\s+/g, " ").trim();
 }
@@ -177,13 +188,7 @@ function priceAnswer(query: string, tokens: string[]): string {
   const text = normalise(query);
   const sorted = [...allActivities].sort((a, b) => a.price - b.price);
   if (/(cheap|budget|affordable|least|lowest)/.test(text)) {
-    return [
-      "These are the lowest-priced activities we list:",
-      "",
-      ...sorted.slice(0, 5).map((activity) => `• ${activity.name} — US$${activity.price}`),
-      "",
-      "All prices are per person and shown on each activity's booking page.",
-    ].join("\n");
+    return budgetAnswer(query, tokens);
   }
   if (/(expensive|premium|luxury|luxurious|high end|top end)/.test(text)) {
     return [
@@ -202,6 +207,108 @@ function priceAnswer(query: string, tokens: string[]): string {
     "",
     "Tell me a specific activity and I'll give you its exact price, or browse all prices at /activities.",
   ].join("\n");
+}
+
+/**
+ * The activity category the guest referred to, if they named one — e.g. "safari"
+ * or "cruise" — so budget answers can rank the cheapest options within it.
+ */
+function namedCategory(tokens: string[]): { title: string; slug: string } | undefined {
+  const categories = new Map<string, { title: string; slug: string; words: string[] }>();
+
+  for (const activity of allActivities) {
+    if (categories.has(activity.categorySlug)) continue;
+    categories.set(activity.categorySlug, {
+      title: activity.categoryTitle,
+      slug: activity.categorySlug,
+      words: normalise(`${activity.categoryTitle} ${activity.categorySlug}`)
+        .split(" ")
+        .filter((word) => word.length > 2 && !STOPWORDS.has(word)),
+    });
+  }
+
+  let best: { title: string; slug: string } | undefined;
+  let bestHits = 0;
+  for (const category of categories.values()) {
+    const hits = tokens.filter((token) =>
+      category.words.some((word) => word.startsWith(token) || token.startsWith(word)),
+    ).length;
+    if (hits > bestHits) {
+      bestHits = hits;
+      best = { title: category.title, slug: category.slug };
+    }
+  }
+
+  return best;
+}
+
+function cheapestActivities(limit: number, slug?: string): ActivityWithCategory[] {
+  return [...allActivities]
+    .filter((activity) => (slug ? activity.categorySlug === slug : true))
+    .sort((a, b) => a.price - b.price)
+    .slice(0, limit);
+}
+
+/**
+ * Budget answer: the cheapest activities (ranked within the category the guest
+ * named, when they named one) plus the best-value room, and a word for solo
+ * travellers — the questions the generic overview used to swallow.
+ */
+function budgetAnswer(question: string, tokens: string[]): string {
+  const text = normalise(question);
+  const wantsRooms = ROOM_SCOPE.test(text);
+  const wantsActivities = ACTIVITY_SCOPE.test(text) || !wantsRooms;
+  const category = namedCategory(tokens);
+  const lines: string[] = ["Happy to help you find the best value! 🌿", ""];
+
+  if (wantsActivities) {
+    lines.push(
+      category
+        ? `Lowest-priced activities in ${category.title} (US$, per person):`
+        : "Our lowest-priced activities (US$, per person):",
+      ...cheapestActivities(5, category?.slug).map(
+        (activity) => `• ${activity.name} — US$${activity.price}`,
+      ),
+      "",
+    );
+  }
+
+  const sortedRooms = [...rooms].sort((a, b) => a.price - b.price);
+
+  if (wantsRooms) {
+    const [cheapestRoom, ...otherRooms] = sortedRooms;
+    lines.push(
+      "Best-value room (US$, per night):",
+      `• ${cheapestRoom.name} — US$${cheapestRoom.price} — ${cheapestRoom.description}`,
+    );
+    if (otherRooms.length > 0) {
+      lines.push(
+        `Other rooms: ${otherRooms.map((room) => `${room.name} (US$${room.price})`).join(", ")}.`,
+      );
+    }
+    lines.push(`Book a room: ${siteConfig.bookingHref}`, "");
+  }
+
+  if (SOLO_PATTERN.test(text)) {
+    const singleRoom = sortedRooms.find((room) => /single/i.test(room.name));
+    let roomHint = "";
+    if (singleRoom && !wantsRooms) {
+      roomHint = ` The ${singleRoom.name} (US$${singleRoom.price} per night) is made for solo guests.`;
+    } else if (singleRoom) {
+      roomHint = " The Single Room above is made for solo guests.";
+    }
+    lines.push(
+      `Travelling alone is easy here — every activity is priced per person, so you can join any group departure on your own.${roomHint}`,
+      "",
+    );
+  }
+
+  lines.push(
+    "Prices are as listed on our website and can change, so the booking page confirms the final amount.",
+    "Tell me any single activity and I'll quote its exact price, or browse everything at /activities.",
+  );
+
+  return lines.join("\n");
 }
 
 /**
@@ -253,6 +360,12 @@ export function offlineAnswer(question: string, history: PriorMessage[] = []): s
   // A specific activity was named alongside a price question.
   if (strongActivityMatch && mentionsPrice) {
     return priceAnswer(question, tokens);
+  }
+
+  // Budget questions ("what's the cheapest...") rank the lowest-priced
+  // activities and rooms instead of falling through to a category overview.
+  if (BUDGET_PATTERN.test(text)) {
+    return budgetAnswer(question, tokens);
   }
 
   const questionInterests = guessInterests(question);
